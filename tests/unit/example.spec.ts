@@ -1,12 +1,23 @@
-import { shallowMount } from '@vue/test-utils';
-import HelloWorld from '@/components/HelloWorld.vue';
+import { shallowMount } from '@vue/test-utils'
+import VSuperSelect from '@/components/VSuperSelect.vue'
 
-describe('HelloWorld.vue', () => {
-  it('renders props.msg when passed', () => {
-    const msg = 'new message';
-    const wrapper = shallowMount(HelloWorld, {
-      propsData: { msg },
-    });
-    expect(wrapper.text()).toMatch(msg);
-  });
-});
+describe('VSuperSelect.vue', () => {
+  it('will match snapshot', () => {
+    const wrapper = shallowMount(VSuperSelect, {
+      propsData: {
+        items: [
+          {
+            text: 'Item 1',
+            value: '1',
+          },
+          {
+            text: 'Item 2',
+            value: '2',
+          },
+        ],
+      },
+    })
+
+    expect(wrapper).toMatchSnapshot()
+  })
+})

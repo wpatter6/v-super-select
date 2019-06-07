@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`VSuperSelect.vue will match snapshot 1`] = `
+<div class="select-container"><label class="select-input"><span class="label"></span> <input type="text" placeholder="Select an Item..." aria-role="listbox" autocomplete="nope" class="input"></label>
+  <div class="select-dropdown" style="max-height: 300px;">
+    <div class="item-list">
+      <div aria-role="option" aria-label="Item 1" class="item">
+        <div class="text">
+          <!----> <span>Item 1</span></div>
+        <div class="val">1</div>
+      </div>
+      <div aria-role="option" aria-label="Item 2" class="item">
+        <div class="text">
+          <!----> <span>Item 2</span></div>
+        <div class="val">2</div>
+      </div>
+      <!---->
+    </div>
+  </div>
+  <div style="display: none;"></div>
+</div>
+`;

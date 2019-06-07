@@ -1,10 +1,17 @@
 {
   "name": "v-super-select",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "main": "./dist/v-super-select.common.js",
+  "module": "./dist/v-super-select.common.js",
+  "unpkg": "./dist/v-super-select.common.js",
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "build-lib": "vue-cli-service build --target lib --name v-super-select ./src/components/VSuperSelect.vue",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit"
   },
@@ -24,6 +31,7 @@
     "sass-loader": "^7.1.0",
     "ts-jest": "^23.0.0",
     "typescript": "^3.4.3",
+    "vue-code-highlight": "^0.7.1",
     "vue-template-compiler": "^2.6.10"
   },
   "postcss": {
