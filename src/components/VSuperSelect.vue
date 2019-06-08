@@ -1,8 +1,9 @@
 <template>
   <div class="select-container" :class="{'dropdown-visible': dropdownVisible}">
     <label class="select-input" @click="showDropdown">
-      <slot name="label">
-        <span class="label">{{label}}</span>
+      <!-- Optional slot to format label -->
+      <slot name="label" :label="label">
+        <span class="label" :label="label">{{label}}</span>
       </slot>
       <input
         type="text"
@@ -171,7 +172,6 @@ export default Vue.extend({
         }
       }, 100)
     },
-    // @vuese
     // Used to show the dropdown
     showDropdown() {
       this.inputText = ''
