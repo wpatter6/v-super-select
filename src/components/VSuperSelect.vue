@@ -1,7 +1,9 @@
 <template>
   <div class="select-container" :class="{'dropdown-visible': dropdownVisible}">
     <label class="select-input" @click="showDropdown">
-      <span class="label">{{label}}</span>
+      <slot name="label">
+        <span class="label">{{label}}</span>
+      </slot>
       <input
         type="text"
         class="input"
@@ -38,20 +40,22 @@
               :aria-label="child[textField]"
             >
               <!-- Optional slot to format your grouped items however you like.  Use `item.$html` to show bolded search values. -->
-              <slot name="group-item" :item="item"></slot>
-              <div class="text" v-if="!$slots[group-item]">
-                <i v-if="child[iconClassField]" class="icon" :class="child[iconClassField]"/>
-                <img v-if="child[iconUrlField]" class="icon" :src="child[iconUrlField]">
-                <span v-html="child.$html"></span>
-              </div>
-              <div
-                v-if="!$slots[group-item]"
-                class="val"
-                :class="{bold: child[valueField].toLowerCase() === inputText}"
-              >{{!showValue ? '' : child[valueField]}}</div>
+              <slot name="group-item" :item="item">
+                <div class="text" v-if="!$slots[group-item]">
+                  <i v-if="child[iconClassField]" class="icon" :class="child[iconClassField]"/>
+                  <img v-if="child[iconUrlField]" class="icon" :src="child[iconUrlField]">
+                  <span v-html="child.$html"></span>
+                </div>
+                <div
+                  v-if="!$slots[group-item]"
+                  class="val"
+                  :class="{bold: child[valueField].toLowerCase() === inputText}"
+                >{{!showValue ? '' : child[valueField]}}</div>
+              </slot>
             </div>
           </template>
-          <template v-else-if="!isGrouped && !$slots.item">
+          <!-- Optional slot to format your items however you like.  Use `item.$html` to show bolded search values. -->
+          <slot v-else-if="!isGrouped" name="item" :item="item">
             <div class="text">
               <i v-if="item.icon" class="icon" :class="item.icon"/>
               <span v-html="item.$html"></span>
@@ -60,9 +64,7 @@
               class="val"
               :class="{ bold: item[valueField].toLowerCase() === inputText.toLowerCase() }"
             >{{ !showValue ? '' : item[valueField] }}</div>
-          </template>
-          <!-- Optional slot to format your items however you like.  Use `item.$html` to show bolded search values. -->
-          <slot v-else-if="!isGrouped" name="item" :item="item"></slot>
+          </slot>
         </div>
         <div v-if="flattenedItems.length === 0" class="item">
           <div class="text">{{ noneFoundText }}</div>
