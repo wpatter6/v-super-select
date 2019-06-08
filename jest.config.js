@@ -1,10 +1,10 @@
-const testMatch = ['**/tests/**/*.spec.ts'],
-  coverageReporters = ['cobertura', 'html', 'text'];
+const testMatch = ['!', '**/tests/**/*.spec.ts'],
+  coverageReporters = ['cobertura', 'html', 'text']
 
 //This is an absolute hack which allows full debugging of tests, but causes code coverage to break.
 if (process.env.DEBUG_TESTS === 'true') {
-  testMatch.push('!');
-  coverageReporters.length = 0;
+  testMatch.push('!')
+  coverageReporters.length = 0
 }
 
 module.exports = {
@@ -44,4 +44,4 @@ module.exports = {
       babelConfig: true,
     },
   },
-};
+}
