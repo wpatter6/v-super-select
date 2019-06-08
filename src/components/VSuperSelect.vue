@@ -1,5 +1,10 @@
 <template>
-  <div class="select-container" :class="{'dropdown-visible': dropdownVisible}">
+  <div class="select-container" :class="{'dropdown-visible': dropdownVisible}" 
+    :style="{
+      '--boxHeight': inputHeight,
+      '--boxWidth': inputWidth,
+      '--dropDownMaxHeight': dropdownMaxHeightCalc
+    }">
     <label class="select-input" @click="showDropdown">
       <!-- Optional slot to format label -->
       <slot name="label" :label="label">
@@ -7,10 +12,11 @@
       </slot>
       <input
         type="text"
-        class="input"
         @focus="showDropdown"
         @blur="hideDropdown"
         @keydown="$_keyTextBox"
+        @keypress="$_keyTextBox"
+        @keyup="$_keyTextBox"
         :placeholder="placeholder"
         v-model="inputText"
         aria-role="listbox"
@@ -18,7 +24,7 @@
         :autocomplete="autocomplete"
       >
     </label>
-    <div class="select-dropdown" :style="{maxHeight: dropdownMaxHeight + 'px'}" ref="dropdown">
+    <div class="select-dropdown" ref="dropdown">
       <div class="item-list">
         <div
           v-for="(item, index) in displayItems"
@@ -143,24 +149,42 @@ export default Vue.extend({
       type: String,
       default: 'No Results Found',
     },
+    // Css height of the textbox container
+    inputHeight: {
+      type: String,
+      default: '52px',
+    },
+    // Css width of the textbox container
+    inputWidth: {
+      type: String,
+      default: '185px',
+    },
+    // Css max height of dropdown
+    dropDownMaxHeight: String
   },
   data() {
     return {
       inputText: '',
       dropdownVisible: false,
       prevText: '',
-      selectedItemIndex: -1,
+      selectedIndex: null,
       originalFilter: null,
-      dropdownMaxHeight: 300,
+      dropdownMaxHeightCalc: this.dropDownMaxHeight,
       isMounted: false,
     }
   },
   methods: {
     // Used to select an item.
-    selectItem(item: any, itemIndex: number) {
-      this.prevText = this.inputText = item[this.textField]
-      this.selectedItemIndex = itemIndex
-      this.$emit('input', item[this.valueField])
+    selectItem(item: any, itemIndex?: number) {
+      const val = item ? item[this.valueField] : null;
+      this.prevText = this.inputText = item ? item[this.textField] : null
+      this.selectedIndex = item ? itemIndex || this.flattenedItems.indexOf(item) : null
+      this.$emit('input', val)
+      this.$emit('change', val);
+    },
+    // Clears the drop down selection.
+    clearSelection() {
+      this.selectItem(null);
     },
     // Used to hide the dropdown
     hideDropdown() {
@@ -170,37 +194,44 @@ export default Vue.extend({
         if (!this.inputText && this.prevText) {
           this.inputText = this.prevText
         }
+        this.$emit('closed')
       }, 100)
     },
     // Used to show the dropdown
     showDropdown() {
       this.inputText = ''
       this.dropdownVisible = true
-      this.dropdownMaxHeight =
-        window.innerHeight - this.$refs.dropdown.getBoundingClientRect().top
+      this.dropdownMaxHeightCalc = this.dropDownMaxHeight ||
+        window.innerHeight - this.$refs.dropdown.getBoundingClientRect().top + 'px'
+      this.$emit('opened');
     },
     $_keyTextBox(e: KeyboardEvent) {
+      this.$emit(e.type, e);
+      if(!e.type === 'keydown') {
+        return;
+      }
+
       if (e.key === 'ArrowDown') {
-        if (this.selectedItemIndex >= this.flattenedItems.length - 1) {
-          this.selectedItemIndex = 0
+        if (this.selectedIndex >= this.flattenedItems.length - 1) {
+          this.selectedIndex = 0
         } else {
-          this.selectedItemIndex++
+          this.selectedIndex++
         }
         if (this.originalFilter === null) {
           this.originalFilter = this.inputText
         }
       } else if (e.key === 'ArrowUp') {
-        if (this.selectedItemIndex <= 0) {
-          this.selectedItemIndex = this.flattenedItems.length - 1
+        if (this.selectedIndex <= 0) {
+          this.selectedIndex = this.flattenedItems.length - 1
         } else {
-          this.selectedItemIndex--
+          this.selectedIndex--
         }
         if (this.originalFilter === null) {
           this.originalFilter = this.inputText
         }
       } else if (e.key === 'Enter' || e.key === 'Tab') {
         if (this.activeItem) {
-          this.selectItem(this.activeItem, this.selectedItemIndex)
+          this.selectItem(this.activeItem, this.selectedIndex)
         } else {
           const codeMatch = this.flattenedItems.find(
             (item: any) =>
@@ -294,7 +325,7 @@ export default Vue.extend({
       )
     },
     activeItem(): any {
-      return this.flattenedItems[this.selectedItemIndex]
+      return this.flattenedItems[this.selectedIndex]
     },
     flattenedItems(): any[] {
       if (!this.isGrouped) {
@@ -322,8 +353,8 @@ export default Vue.extend({
   .select-input {
     border: 1px solid #aeb0ab;
     background-color: #fff;
-    height: 52px;
-    width: 185px;
+    height: var(--boxHeight, 52px);
+    width: var(--boxWidth, 185px);
     cursor: pointer;
     padding: 9px 14px;
     display: flex;
@@ -340,7 +371,7 @@ export default Vue.extend({
       font-weight: 400;
     }
 
-    .input {
+    input {
       border: 0;
       width: 100%;
       font-size: 16px;
@@ -374,6 +405,7 @@ export default Vue.extend({
     justify-content: flex-start;
     padding-top: 8px;
     padding-right: 3px;
+    max-height: var(--dropDownMaxHeight, 300px);
 
     .item-list {
       overflow: auto;
