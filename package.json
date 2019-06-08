@@ -1,11 +1,17 @@
 {
   "name": "v-super-select",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
   "main": "./dist/v-super-select.common.js",
   "module": "./dist/v-super-select.common.js",
   "unpkg": "./dist/v-super-select.common.js",
   "license": "./LICENSE.md",
+  "keywords": [
+    "vue",
+    "vue.js",
+    "select",
+    "dropdown"
+  ],
   "author": {
     "name": "wpatter6",
     "url": "https://wpatter6.github.io"
