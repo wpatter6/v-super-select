@@ -53,7 +53,8 @@ An accessible and customizable select/drop down component that features searchin
 | Name       | Description                                                                                       | Default Slot Content |
 | ---------- | ------------------------------------------------------------------------------------------------- | -------------------- |
 | label      | Use to format label                                                                               | -                    |
-| group-item | Use to format your grouped items however you like. Use `item.$html` to show bolded search values. | -                    |
+| item | Use to format your list items however you like. Use `item.$html` to show bolded search values. | -                    |
+| group-item | Use to format your grouped list items however you like. Use `item.$html` to show bolded search values. | -                    |
 | default    | Add items the old way with option tags, ex: &lt;option value="1"&gt;Item 1&lt;/option&gt;         | -                    |
 
 <!-- @vuese:VSuperSelect:slots:end -->
