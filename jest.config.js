@@ -1,4 +1,4 @@
-const testMatch = ['!', '**/tests/**/*.spec.ts'],
+const testMatch = [/* '!',  */ '**/*.spec.ts'],
   coverageReporters = ['cobertura', 'html', 'text']
 
 //This is an absolute hack which allows full debugging of tests, but causes code coverage to break.

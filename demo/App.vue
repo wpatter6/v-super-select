@@ -17,7 +17,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import VSuperSelect from './components/VSuperSelect.vue'
+import VSuperSelect from '../src/VSuperSelect.vue'
 
 export default Vue.extend({
   name: 'app',

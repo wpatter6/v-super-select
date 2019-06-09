@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils'
-import VSuperSelect from '@/components/VSuperSelect.vue'
+import VSuperSelect from '@/VSuperSelect.vue'
 
 describe('VSuperSelect.vue', () => {
   it('will match snapshot', () => {
