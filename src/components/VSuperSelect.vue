@@ -1,11 +1,14 @@
 <template>
-  <div class="select-container" :class="{'dropdown-visible': dropdownVisible}" 
+  <div
+    class="select-container"
+    :class="{'dropdown-visible': dropdownVisible}"
     :style="{
       '--boxHeight': inputHeight,
       '--boxWidth': inputWidth,
       '--dropDownMaxHeight': dropdownMaxHeightCalc
-    }">
-    <label class="select-input" @click="showDropdown">
+    }"
+  >
+    <label ref="field" class="select-input" @click="showDropdown">
       <!-- Optional slot to format label -->
       <slot name="label" :label="label">
         <span class="label" :label="label">{{label}}</span>
@@ -24,7 +27,7 @@
         :autocomplete="autocomplete"
       >
     </label>
-    <div class="select-dropdown" ref="dropdown">
+    <div class="select-dropdown" :class="{above: dropdownAbove}" ref="dropdown">
       <div class="item-list">
         <div
           v-for="(item, index) in displayItems"
@@ -48,13 +51,12 @@
             >
               <!-- Optional slot to format your grouped items however you like.  Use `item.$html` to show bolded search values. -->
               <slot name="group-item" :item="item">
-                <div class="text" v-if="!$slots[group-item]">
+                <div class="text">
                   <i v-if="child[iconClassField]" class="icon" :class="child[iconClassField]"/>
                   <img v-if="child[iconUrlField]" class="icon" :src="child[iconUrlField]">
                   <span v-html="child.$html"></span>
                 </div>
                 <div
-                  v-if="!$slots[group-item]"
                   class="val"
                   :class="{bold: child[valueField].toLowerCase() === inputText}"
                 >{{!showValue ? '' : child[valueField]}}</div>
@@ -160,22 +162,23 @@ export default Vue.extend({
       default: '185px',
     },
     // Css max height of dropdown
-    dropDownMaxHeight: String,
+    dropDownMaxHeight: [Number, String],
   },
   data() {
     return {
       inputText: '',
-      dropdownVisible: false,
       prevText: '',
       selectedIndex: null,
       originalFilter: null,
+      dropdownVisible: false,
       dropdownMaxHeightCalc: this.dropDownMaxHeight,
+      dropdownAbove: false,
       isMounted: false,
     }
   },
   methods: {
     // Used to select an item.
-    selectItem(item: any, itemIndex?: number) {
+    selectItem(item: any, itemIndex?: number): void {
       const val = item ? item[this.valueField] : null
       this.prevText = this.inputText = item ? item[this.textField] : null
       this.selectedIndex = item ? itemIndex || this.flattenedItems.indexOf(item) : null
@@ -183,11 +186,11 @@ export default Vue.extend({
       this.$emit('change', val)
     },
     // Clears the drop down selection.
-    clearSelection() {
+    clearSelection(): void {
       this.selectItem(null)
     },
     // Used to hide the dropdown
-    hideDropdown() {
+    hideDropdown(): void {
       setTimeout(() => {
         this.dropdownVisible = false
         this.originalFilter = null
@@ -198,14 +201,24 @@ export default Vue.extend({
       }, 100)
     },
     // Used to show the dropdown
-    showDropdown() {
+    showDropdown(): void {
       this.inputText = ''
       this.dropdownVisible = true
-      this.dropdownMaxHeightCalc = this.dropDownMaxHeight ||
-        window.innerHeight - this.$refs.dropdown.getBoundingClientRect().top + 'px'
+      this.dropdownMaxHeightCalc = this.dropDownMaxHeight || this.getDropdownMaxHeight() + 'px'
+
       this.$emit('opened')
     },
-    $_keyTextBox(e: KeyboardEvent) {
+    getDropdownMaxHeight(): number {
+      const underResult = window.innerHeight - this.$refs.field.getBoundingClientRect().bottom - 10
+      console.log(underResult)
+      if (underResult > 150) {
+        this.dropdownAbove = false
+        return underResult
+      }
+      this.dropdownAbove = true
+      return window.innerHeight - underResult - this.$refs.field.offsetHeight
+    },
+    $_keyTextBox(e: KeyboardEvent): void {
       this.$emit(e.type, e)
       if (e.type !== 'keydown') {
         return
@@ -246,7 +259,7 @@ export default Vue.extend({
         this.hideDropdown()
       }
     },
-    $_itemMatchesInputText(item: any) {
+    $_itemMatchesInputText(item: any): boolean {
       return !this.filterText
         ? true
         : item[this.textField]
@@ -255,7 +268,7 @@ export default Vue.extend({
             item[this.valueField].toLowerCase() ===
               this.filterText.toLowerCase()
     },
-    $_highlightTextString(val: string) {
+    $_highlightTextString(val: string): string {
       if (this.filterText) {
         return val.replace(
           new RegExp(`(${this.filterText})`, 'gi'),
@@ -264,7 +277,7 @@ export default Vue.extend({
       }
       return val
     },
-    $_normalizeItems(items: any[]) {
+    $_normalizeItems(items: any[]): any[] {
       return items.map(item => ({
         ...item,
         $html: this.$_highlightTextString(item[this.textField]),
@@ -275,7 +288,6 @@ export default Vue.extend({
     itemsFromSlot(): any[] | null {
       if (this.isMounted && this.$slots.default) {
         return this.$slots.default.map((item: VNode) => {
-          console.log(item.elm)
           const text = item.elm instanceof Element ? item.elm.textContent : ''
           const val =
             item.data && item.data.attrs ? item.data.attrs.value : item.text
@@ -325,6 +337,9 @@ export default Vue.extend({
       )
     },
     activeItem(): any {
+      if (this.selectedIndex === null) {
+        return null
+      }
       return this.flattenedItems[this.selectedIndex]
     },
     flattenedItems(): any[] {
@@ -338,7 +353,7 @@ export default Vue.extend({
       )
       return result
     },
-    filterText(): string {
+    filterText(): string | null {
       return this.originalFilter === null ? this.inputText : this.originalFilter
     },
   },
@@ -350,6 +365,8 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .select-container {
+  position: relative;
+
   .select-input {
     border: 1px solid #aeb0ab;
     background-color: #fff;
@@ -469,6 +486,11 @@ export default Vue.extend({
           font-weight: 600;
         }
       }
+    }
+
+    &.above {
+      margin-top: 0;
+      bottom: calc(24px + var(--boxHeight, 300px))
     }
   }
 
