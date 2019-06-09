@@ -1,11 +1,11 @@
 {
   "name": "v-super-select",
-  "version": "0.1.3",
+  "version": "0.1.6",
   "private": false,
-  "main": "./dist/v-super-select.common.js",
-  "module": "./dist/v-super-select.common.js",
-  "unpkg": "./dist/v-super-select.common.js",
-  "license": "GNU GPL-3.0",
+  "main": "dist/v-super-select.common.js",
+  "module": "dist/v-super-select.common.js",
+  "unpkg": "dist/v-super-select.common.js",
+  "license": "GPL-3.0-or-later",
   "keywords": [
     "vue",
     "vue.js",
@@ -21,7 +21,9 @@
     "url": "https://github.com/wpatter6/v-super-select"
   },
   "files": [
-    "dist/*"
+    "dist/*",
+    "src/*",
+    "public/*"
   ],
   "scripts": {
     "serve": "vue-cli-service serve",
