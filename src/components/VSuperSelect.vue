@@ -160,7 +160,7 @@ export default Vue.extend({
       default: '185px',
     },
     // Css max height of dropdown
-    dropDownMaxHeight: String
+    dropDownMaxHeight: String,
   },
   data() {
     return {
@@ -176,15 +176,15 @@ export default Vue.extend({
   methods: {
     // Used to select an item.
     selectItem(item: any, itemIndex?: number) {
-      const val = item ? item[this.valueField] : null;
+      const val = item ? item[this.valueField] : null
       this.prevText = this.inputText = item ? item[this.textField] : null
       this.selectedIndex = item ? itemIndex || this.flattenedItems.indexOf(item) : null
       this.$emit('input', val)
-      this.$emit('change', val);
+      this.$emit('change', val)
     },
     // Clears the drop down selection.
     clearSelection() {
-      this.selectItem(null);
+      this.selectItem(null)
     },
     // Used to hide the dropdown
     hideDropdown() {
@@ -203,12 +203,12 @@ export default Vue.extend({
       this.dropdownVisible = true
       this.dropdownMaxHeightCalc = this.dropDownMaxHeight ||
         window.innerHeight - this.$refs.dropdown.getBoundingClientRect().top + 'px'
-      this.$emit('opened');
+      this.$emit('opened')
     },
     $_keyTextBox(e: KeyboardEvent) {
-      this.$emit(e.type, e);
-      if(!e.type === 'keydown') {
-        return;
+      this.$emit(e.type, e)
+      if (e.type !== 'keydown') {
+        return
       }
 
       if (e.key === 'ArrowDown') {
