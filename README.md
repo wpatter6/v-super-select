@@ -4,6 +4,8 @@
 
 An accessible and customizable select/drop down component that features searching and grouping.
 
+- [Try out the demo sandbox here](https://codesandbox.io/s/v-super-select-demo-8542r)
+
 ## Props
 
 <!-- @vuese:VSuperSelect:props:start -->
