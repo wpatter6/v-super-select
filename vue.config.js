@@ -21,7 +21,7 @@ module.exports = {
   },
   parallel: !typings,
   chainWebpack: config => {
-    typings &&
+    if (typings) {
       config.module
         .rule('ts')
         .use('ts-loader')
@@ -31,5 +31,8 @@ module.exports = {
           opts.happyPackMode = false
           return opts
         })
+
+      config.module.rule('ts').uses.delete('cache-loader')
+    }
   },
 }
