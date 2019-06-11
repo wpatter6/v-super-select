@@ -76,7 +76,7 @@
             >{{ !showValue ? '' : item[valueField] }}</div>
           </slot>
         </div>
-        <div v-if="flattenedItems.length === 0" class="item">
+        <div v-if="ungroupedItems.length === 0" class="item">
           <div class="text">{{ noneFoundText }}</div>
           <div class="val"></div>
         </div>
@@ -188,7 +188,7 @@ export default Vue.extend({
       const val = item ? item[this.valueField] : null
       this.prevText = this.inputText = item ? item[this.textField] : null
       this.selectedIndex = item
-        ? itemIndex || this.flattenedItems.indexOf(item)
+        ? itemIndex || this.ungroupedItems.indexOf(item)
         : null
       this.$emit('input', val)
       this.$emit('change', val)
@@ -237,7 +237,7 @@ export default Vue.extend({
       }
 
       if (e.key === 'ArrowDown') {
-        if (this.selectedIndex >= this.flattenedItems.length - 1) {
+        if (this.selectedIndex >= this.ungroupedItems.length - 1) {
           this.selectedIndex = 0
         } else {
           this.selectedIndex++
@@ -247,7 +247,7 @@ export default Vue.extend({
         }
       } else if (e.key === 'ArrowUp') {
         if (this.selectedIndex <= 0) {
-          this.selectedIndex = this.flattenedItems.length - 1
+          this.selectedIndex = this.ungroupedItems.length - 1
         } else {
           this.selectedIndex--
         }
@@ -258,13 +258,13 @@ export default Vue.extend({
         if (this.activeItem) {
           this.selectItem(this.activeItem, this.selectedIndex)
         } else {
-          const codeMatch = this.flattenedItems.find(
+          const codeMatch = this.ungroupedItems.find(
             (item: any) =>
               item[this.valueField].toLowerCase() ===
               this.inputText.toLowerCase(),
           )
           if (codeMatch) {
-            this.selectItem(codeMatch, this.flattenedItems.indexOf(codeMatch))
+            this.selectItem(codeMatch, this.ungroupedItems.indexOf(codeMatch))
           }
         }
 
@@ -313,14 +313,16 @@ export default Vue.extend({
     },
     displayItems(): any[] {
       if (this.isGrouped) {
-        return this.items.map((group: any) => ({
-          [this.groupNameField]: group[this.groupNameField],
-          [this.childrenField]: this.$_normalizeItems(
-            group[this.childrenField].filter((item: any) =>
-              this.$_itemMatchesInputText(item),
+        return this.items
+          .map((group: any) => ({
+            [this.groupNameField]: group[this.groupNameField],
+            [this.childrenField]: this.$_normalizeItems(
+              group[this.childrenField].filter((item: any) =>
+                this.$_itemMatchesInputText(item),
+              ),
             ),
-          ),
-        })).filter((group: any) => group[this.childrenField].length)
+          }))
+          .filter((group: any) => group[this.childrenField].length)
       }
 
       if (this.items) {
@@ -352,9 +354,9 @@ export default Vue.extend({
       if (this.selectedIndex === null) {
         return null
       }
-      return this.flattenedItems[this.selectedIndex]
+      return this.ungroupedItems[this.selectedIndex]
     },
-    flattenedItems(): any[] {
+    ungroupedItems(): any[] {
       if (!this.isGrouped) {
         return this.displayItems
       }
