@@ -1,11 +1,11 @@
 {
   "name": "v-super-select",
-  "version": "0.1.12",
+  "version": "0.1.14",
   "private": false,
   "main": "dist/v-super-select.common.js",
   "module": "dist/v-super-select.common.js",
   "unpkg": "dist/v-super-select.common.js",
-  "types": "dist/VSuperSelect.d.ts",
+  "types": "dist/VSuperSelect.vue.d.ts",
   "license": "GPL-3.0-or-later",
   "keywords": [
     "vue",
