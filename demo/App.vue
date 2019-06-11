@@ -11,6 +11,17 @@
       <v-super-select label="data" :items="flatItems"></v-super-select>
       <h3>Using Grouped Items from Data:</h3>
       <v-super-select label="group data" :items="groupedItems"></v-super-select>
+      <h3>2000 Grouped Items Virtual Scrolling:</h3>
+      <v-super-select label="virtual scrolling" :items="virtualScrollItems"></v-super-select>
+      <h3>Using Irregular Data</h3>
+      <v-super-select
+        label="irregular data" 
+        :items="irregularItems" 
+        text-field="friendlyText" 
+        value-field="code" 
+        group-name-field="headerText" 
+        children-field="children" 
+      ></v-super-select>
     </section>
   </div>
 </template>
@@ -33,7 +44,35 @@ export default Vue.extend({
           value: '2',
         },
       ],
-      groupedItems: Array(100)
+      groupedItems: [
+        {
+          groupName: 'Group 1',
+          items: [
+            {
+              text: 'First Group First Item',
+              value: '1',
+            },
+            {
+              text: 'First Group Second Item',
+              value: '2',
+            },
+          ],
+        },
+        {
+          groupName: 'Group 2',
+          items: [
+            {
+              text: 'Second Group First Item',
+              value: '3',
+            },
+            {
+              text: 'Second Group Second Item',
+              value: '4',
+            },
+          ],
+        },
+      ],
+      virtualScrollItems: Array(100)
         .join()
         .split(',')
         .map((u, i) => ({
@@ -46,6 +85,42 @@ export default Vue.extend({
               value: 'g' + i + 'i' + j,
             })),
         })),
+      irregularItems: [
+        {
+          headerText: 'Header Text 1',
+          children: [
+            {
+              code: 'ABC',
+              friendlyText: 'Friendly Text 1',
+            },
+            {
+              code: 'DEF',
+              friendlyText: 'Friendly Text 2',
+            },
+            {
+              code: 'GHI',
+              friendlyText: 'Friendly Text 3',
+            },
+          ],
+        },
+        {
+          headerText: 'Header Text 2',
+          children: [
+            {
+              code: 'JKL',
+              friendlyText: 'Friendly Text 4',
+            },
+            {
+              code: 'MNO',
+              friendlyText: 'Friendly Text 5',
+            },
+            {
+              code: 'PQR',
+              friendlyText: 'Friendly Text 6',
+            },
+          ],
+        },
+      ],
     }
   },
   components: {
