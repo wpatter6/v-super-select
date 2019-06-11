@@ -1,7 +1,7 @@
 <template>
   <div
     class="select-container"
-    :class="{'dropdown-visible': dropdownVisible}"
+    :class="{'dropdown-visible': dropdownVisible, 'disabled': disabled}"
     :style="{
       '--boxHeight': inputHeight,
       '--boxWidth': inputWidth,
@@ -27,6 +27,7 @@
         aria-role="listbox"
         :name="name"
         :autocomplete="autocomplete"
+        :disabled="disabled"
       >
     </label>
     <div class="select-dropdown" :class="{above: dropdownAbove}" ref="dropdown">
@@ -85,6 +86,11 @@ export default Vue.extend({
     value: String,
     // Data items to display in the drop down.
     items: Array,
+    // Field is disabled
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     // Placeholder text to display when no value is selected.
     placeholder: {
       type: String,
@@ -170,6 +176,9 @@ export default Vue.extend({
   methods: {
     // Used to select an item.
     selectItem(item: any): void {
+      if (this.disabled) {
+        return
+      }
       const val = item ? item[this.valueField] : null
       this.prevText = this.inputText = item ? item[this.textField] : null
       this.activeIndex = item ? this.ungroupedItems.indexOf(item) : null
@@ -182,6 +191,9 @@ export default Vue.extend({
     },
     // Clears the drop down selection.
     clearSelection(): void {
+      if (this.disabled) {
+        return
+      }
       this.selectItem(null)
     },
     // Used to hide the dropdown
@@ -198,6 +210,9 @@ export default Vue.extend({
     },
     // Used to show the dropdown
     showDropdown(): void {
+      if (this.disabled) {
+        return
+      }
       this.inputText = ''
       this.dropdownVisible = true
       this.dropdownMaxHeightCalc =
@@ -474,6 +489,12 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .select-container {
   position: relative;
+  color: #60635a;
+  font-size: 11px;
+  line-height: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.09px;
+  font-weight: 400;
 
   .select-input {
     border: 1px solid #aeb0ab;
@@ -486,15 +507,6 @@ export default Vue.extend({
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
-
-    .label {
-      color: #60635a;
-      font-size: 11px;
-      line-height: 15px;
-      text-transform: uppercase;
-      letter-spacing: 0.09px;
-      font-weight: 400;
-    }
 
     input {
       border: 0;
@@ -602,6 +614,17 @@ export default Vue.extend({
     }
   }
 
+  .assistive-text {
+    position: absolute;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
   &.dropdown-visible {
     z-index: 1;
 
@@ -620,15 +643,17 @@ export default Vue.extend({
     }
   }
 
-  .assistive-text {
-    position: absolute;
-    margin: -1px;
-    border: 0;
-    padding: 0;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
+  &.disabled {
+    cursor: default;
+    color: #888;
+    background-color: #eee;
+
+    input,
+    * {
+      cursor: default;
+      color: #888;
+      background-color: #eee;
+    }
   }
 }
 </style>

@@ -17,6 +17,7 @@ An accessible and customizable select/drop down component that features searchin
 | value             | For v-model binding to selected value.                                                        | `String`  | `false`  | -                   |
 | items             | Data items to display in the drop down.                                                       | `Array`   | `false`  | -                   |
 | placeholder       | Placeholder text to display when no value is selected.                                        | `String`  | `false`  | 'Select an Item...' |
+| disabled          | If `true` the control is disabled from user interaction                                       | `Boolean` | `false`  | `false`             |
 | autocomplete      | Value for autocomplete of input tag.                                                          | `String`  | `false`  | 'nope'              |
 | groupNameField    | Property of the top level item that indicates the name of the group.                          | `String`  | `false`  | 'groupName'         |
 | childrenField     | Property of the top level item that contains child items of a group.                          | `String`  | `false`  | 'items'             |

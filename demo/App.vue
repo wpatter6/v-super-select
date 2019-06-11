@@ -2,6 +2,11 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
     <section>
+      <h3>Disabled:</h3>
+      <v-super-select disabled label="disabled">
+        <option value="1">First Option</option>
+        <option value="2">Second Option</option>
+      </v-super-select>
       <h3>Using Default Slot with Select-Style options:</h3>
       <v-super-select label="options">
         <option value="1">First Option</option>
@@ -15,12 +20,12 @@
       <v-super-select label="virtual scrolling" :items="virtualScrollItems"></v-super-select>
       <h3>Using Irregular Data</h3>
       <v-super-select
-        label="irregular data" 
-        :items="irregularItems" 
-        text-field="friendlyText" 
-        value-field="code" 
-        group-name-field="headerText" 
-        children-field="children" 
+        label="irregular data"
+        :items="irregularItems"
+        text-field="friendlyText"
+        value-field="code"
+        group-name-field="headerText"
+        children-field="children"
       ></v-super-select>
     </section>
   </div>
