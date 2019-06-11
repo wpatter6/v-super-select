@@ -29,58 +29,34 @@
       >
     </label>
     <div class="select-dropdown" :class="{above: dropdownAbove}" ref="dropdown">
-      <div class="item-list">
+      <scroller :size="itemHeight" :remain="remainCount">
         <div
-          v-for="(item, index) in displayItems"
-          :key="item[groupNameField] ? item[groupNameField] : item[valueField]"
-          :class="{ 'group': !!item[groupNameField], 'item': !isGrouped, 'active': item === activeItem }"
-          @click="!isGrouped && selectItem(item, index)"
-          :aria-role="!isGrouped ? 'option' : false"
-          :aria-selected="!isGrouped && item === activeItem"
-          :aria-label="!isGrouped && item[textField]"
+          v-for="item in flattenedItems"
+          :key="item.$id"
+          :class="{ item: item.$isItem, group: item.$isGroup, active: item.$isActive }"
+          @click="!item.$isGroup && selectItem(item)"
         >
-          <template v-if="isGrouped && item[childrenField].length">
+          <slot v-if="item.$isGroup" name="group" :group="item">
             <div class="group-name">{{ item[groupNameField] }}</div>
-            <div
-              v-for="(child, childIndex) in item[childrenField]"
-              :key="item[groupNameField] + '_' + child[valueField]"
-              :class="['item', { 'active': child === activeItem }]"
-              @click="selectItem(child, childIndex, index)"
-              aria-role="option"
-              :aria-selected="child === activeItem"
-              :aria-label="child[textField]"
-            >
-              <!-- Optional slot to format your grouped items however you like.  Use `item.$html` to show bolded search values. -->
-              <slot name="group-item" :item="item">
-                <div class="text">
-                  <i v-if="child[iconClassField]" class="icon" :class="child[iconClassField]"/>
-                  <img v-if="child[iconUrlField]" class="icon" :src="child[iconUrlField]">
-                  <span v-html="child.$html"></span>
-                </div>
-                <div
-                  class="val"
-                  :class="{bold: child[valueField].toLowerCase() === inputText}"
-                >{{!showValue ? '' : child[valueField]}}</div>
-              </slot>
-            </div>
-          </template>
-          <!-- Optional slot to format your items however you like.  Use `item.$html` to show bolded search values. -->
-          <slot v-else-if="!isGrouped" name="item" :item="item">
+          </slot>
+          <slot v-else-if="item.$isItem" name="item" :item="item">
             <div class="text">
               <i v-if="item.icon" class="icon" :class="item.icon"/>
               <span v-html="item.$html"></span>
             </div>
             <div
               class="val"
-              :class="{ bold: item[valueField].toLowerCase() === inputText.toLowerCase() }"
+              :class="{ bold: item && item[valueField] && item[valueField].toLowerCase() === filterText.toLowerCase() }"
             >{{ !showValue ? '' : item[valueField] }}</div>
           </slot>
         </div>
-        <div v-if="ungroupedItems.length === 0" class="item">
+      </scroller>
+      <slot v-if="ungroupedItems.length === 0" name="none-found" :text="noneFoundText">
+        <div class="item">
           <div class="text">{{ noneFoundText }}</div>
           <div class="val"></div>
         </div>
-      </div>
+      </slot>
     </div>
     <div style="display:none">
       <!-- Optional slot to add items the 'old' way with option tags, ex: <option value="1">Item 1</option>-->
@@ -91,6 +67,9 @@
 
 <script lang="ts">
 import Vue, { VNode } from 'vue'
+/* import { RecycleScroller as Scroller } from 'vue-virtual-scroller'
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css' */
+import Scroller from 'vue-virtual-scroll-list'
 
 export default Vue.extend({
   props: {
@@ -174,6 +153,7 @@ export default Vue.extend({
     return {
       inputText: '',
       prevText: '',
+      activeIndex: null,
       selectedIndex: null,
       originalFilter: null,
       dropdownVisible: false,
@@ -184,14 +164,14 @@ export default Vue.extend({
   },
   methods: {
     // Used to select an item.
-    selectItem(item: any, itemIndex?: number): void {
+    selectItem(item: any): void {
       const val = item ? item[this.valueField] : null
       this.prevText = this.inputText = item ? item[this.textField] : null
-      this.selectedIndex = item
-        ? itemIndex || this.ungroupedItems.indexOf(item)
-        : null
-      this.$emit('input', val)
-      this.$emit('change', val)
+      this.activeIndex = item ? this.ungroupedItems.indexOf(item) : null
+      this.selectedIndex = item ? item.$index : null
+      this.$emit('input', item)
+      this.$emit('change', item)
+      this.$emit('selectedIndexChanged', this.selectedIndex)
     },
     // Clears the drop down selection.
     clearSelection(): void {
@@ -213,22 +193,26 @@ export default Vue.extend({
       this.inputText = ''
       this.dropdownVisible = true
       this.dropdownMaxHeightCalc =
-        this.dropDownMaxHeight || this.getDropdownMaxHeight() + 'px'
+        this.dropDownMaxHeight || this.$_getDropdownMaxHeight() + 'px'
 
       this.$emit('opened')
     },
-    getDropdownMaxHeight(): number {
+    $_getDropdownMaxHeight(): number {
+      if (!this.isMounted) {
+        return 300
+      }
       const underResult =
         window.innerHeight -
         this.$refs.field.getBoundingClientRect().bottom -
-        10
-      console.log(underResult)
-      if (underResult > 150) {
+        20
+      if (underResult > 200) {
         this.dropdownAbove = false
         return underResult
       }
       this.dropdownAbove = true
-      return window.innerHeight - underResult - this.$refs.field.offsetHeight
+      return (
+        window.innerHeight - underResult - this.$refs.field.offsetHeight - 60
+      )
     },
     $_keyTextBox(e: KeyboardEvent): void {
       this.$emit(e.type, e)
@@ -236,49 +220,74 @@ export default Vue.extend({
         return
       }
 
+      const scrollEl = this.$refs.dropdown.children[0]
+
       if (e.key === 'ArrowDown') {
-        if (this.selectedIndex >= this.ungroupedItems.length - 1) {
-          this.selectedIndex = 0
+        if (this.activeIndex >= this.ungroupedItems.length - 1) {
+          this.activeIndex = 0
         } else {
-          this.selectedIndex++
+          this.activeIndex++
         }
         if (this.originalFilter === null) {
           this.originalFilter = this.inputText
         }
+
+        /* const realIndex = this.activeIndex + this.activeItem.$groupIndex + 1
+        console.log(realIndex);
+
+        if (this.activeIndex === 0) {
+          scrollEl.scrollTo(0, 0)
+        } else if (
+          realIndex % this.remainCount === 1 &&
+          this.activeIndex !== 1
+        ) {
+          scrollEl.scrollBy({
+            top: Math.floor(this.remainCount / 2) * this.itemHeight,
+            behavior: 'smooth',
+          })
+        } */
       } else if (e.key === 'ArrowUp') {
-        if (this.selectedIndex <= 0) {
-          this.selectedIndex = this.ungroupedItems.length - 1
+        if (this.activeIndex <= 0) {
+          this.activeIndex = this.ungroupedItems.length - 1
         } else {
-          this.selectedIndex--
+          this.activeIndex--
         }
         if (this.originalFilter === null) {
           this.originalFilter = this.inputText
         }
       } else if (e.key === 'Enter' || e.key === 'Tab') {
         if (this.activeItem) {
-          this.selectItem(this.activeItem, this.selectedIndex)
+          this.selectItem(this.activeItem)
         } else {
           const codeMatch = this.ungroupedItems.find(
             (item: any) =>
+              item &&
+              item[this.valueField] &&
               item[this.valueField].toLowerCase() ===
-              this.inputText.toLowerCase(),
+                this.filterText.toLowerCase(),
           )
           if (codeMatch) {
-            this.selectItem(codeMatch, this.ungroupedItems.indexOf(codeMatch))
+            this.selectItem(codeMatch)
           }
         }
 
+        this.hideDropdown()
+      } else if (e.key === 'Escape') {
+        this.clearSelection()
         this.hideDropdown()
       }
     },
     $_itemMatchesInputText(item: any): boolean {
       return !this.filterText
         ? true
-        : item[this.textField]
-            .toLowerCase()
-            .indexOf(this.filterText.toLowerCase()) > -1 ||
-            item[this.valueField].toLowerCase() ===
-              this.filterText.toLowerCase()
+        : item &&
+            item[this.textField] &&
+            this.filterText &&
+            (item[this.textField]
+              .toLowerCase()
+              .indexOf(this.filterText.toLowerCase()) > -1 ||
+              item[this.valueField].toLowerCase() ===
+                this.filterText.toLowerCase())
     },
     $_highlightTextString(val: string): string {
       if (this.filterText) {
@@ -289,10 +298,18 @@ export default Vue.extend({
       }
       return val
     },
-    $_normalizeItems(items: any[]): any[] {
-      return items.map(item => ({
+    $_normalizeItems(
+      items: any[],
+      groupIndex?: number,
+      lastItemIndex = 0,
+    ): any[] {
+      return items.map((item, index) => ({
         ...item,
+        $isItem: true,
+        $index: index + lastItemIndex,
+        $id: item[this.valueField] + '_item',
         $html: this.$_highlightTextString(item[this.textField]),
+        $isActive: index + lastItemIndex === this.activeIndex,
       }))
     },
   } as any,
@@ -313,16 +330,21 @@ export default Vue.extend({
     },
     displayItems(): any[] {
       if (this.isGrouped) {
-        return this.items
-          .map((group: any) => ({
+        const result = [] as any[]
+        let len = 0
+        this.items.forEach((group: any, index: number) => {
+          result.push({
             [this.groupNameField]: group[this.groupNameField],
             [this.childrenField]: this.$_normalizeItems(
-              group[this.childrenField].filter((item: any) =>
-                this.$_itemMatchesInputText(item),
-              ),
-            ),
-          }))
-          .filter((group: any) => group[this.childrenField].length)
+              group[this.childrenField],
+              index,
+              len,
+            ).filter((item: any) => this.$_itemMatchesInputText(item)),
+          })
+          len += group[this.childrenField].length
+        })
+
+        return result.filter((group: any) => group[this.childrenField].length)
       }
 
       if (this.items) {
@@ -351,10 +373,26 @@ export default Vue.extend({
       )
     },
     activeItem(): any {
-      if (this.selectedIndex === null) {
+      if (this.activeIndex === null) {
         return null
       }
-      return this.ungroupedItems[this.selectedIndex]
+      return this.ungroupedItems[this.activeIndex]
+    },
+    flattenedItems(): any[] {
+      if (!this.isGrouped) {
+        return this.displayItems
+      }
+
+      let result = [] as any[]
+      this.displayItems.forEach((group: any) => {
+        result.push({
+          ...group,
+          $isGroup: true,
+          $id: group[this.groupNameField] + '_group',
+        })
+        result = result.concat(group[this.childrenField])
+      })
+      return result
     },
     ungroupedItems(): any[] {
       if (!this.isGrouped) {
@@ -368,11 +406,23 @@ export default Vue.extend({
       return result
     },
     filterText(): string | null {
-      return this.originalFilter === null ? this.inputText : this.originalFilter
+      return (
+        (this.originalFilter === null ? this.inputText : this.originalFilter) ||
+        ''
+      )
+    },
+    remainCount(): number {
+      return Math.min(
+        this.flattenedItems.length,
+        Math.floor(this.$_getDropdownMaxHeight() / this.itemHeight),
+      )
     },
   },
   mounted() {
     this.isMounted = true
+  },
+  components: {
+    Scroller,
   },
 })
 </script>
@@ -424,7 +474,7 @@ export default Vue.extend({
     display: none;
     z-index: 0;
     position: absolute;
-    margin-top: 4px;
+    margin: 4px 0;
     box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 0 0 2px 2px;
     border: 1px solid #aeb0ab;
@@ -434,13 +484,10 @@ export default Vue.extend({
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    padding-top: 8px;
-    padding-right: 3px;
+    padding: 8px 3px 4px 0;
     max-height: var(--dropDownMaxHeight, 300px);
 
-    .item-list {
-      overflow: auto;
-
+    & > *::v-deep {
       &::-webkit-scrollbar-track {
         background-color: #fff;
       }
@@ -454,51 +501,51 @@ export default Vue.extend({
         border-radius: 3px;
         background-color: #afb1ac;
       }
+    }
 
-      .group {
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-start;
-        color: #2e3a30;
+    .group {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      color: #2e3a30;
 
-        .group-name {
-          height: var(--itemHeight, 40px);
-          display: flex;
-          align-items: center;
-          font-weight: 600;
-          border-bottom: 1px solid #aeb0ab;
-          font-size: 14px;
-          margin-left: 17px;
-          margin-right: 5px;
-        }
-      }
-
-      .item {
+      .group-name {
         height: var(--itemHeight, 40px);
-        color: #2e3a30;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding-left: 17px;
-        cursor: pointer;
+        font-weight: 600;
+        border-bottom: 1px solid #aeb0ab;
+        font-size: 14px;
+        margin-left: 17px;
+        margin-right: 5px;
+      }
+    }
 
-        &:hover,
-        &:active,
-        &.active {
-          background-color: #e9e9e4;
-        }
+    .item {
+      height: var(--itemHeight, 40px);
+      color: #2e3a30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 17px;
+      cursor: pointer;
 
-        .val {
-          color: #60635a;
-          text-transform: uppercase;
-          font-size: 12px;
-          letter-spacing: 0.1px;
-          margin-right: 6px;
-        }
+      &:hover,
+      &:active,
+      &.active {
+        background-color: #e9e9e4;
+      }
 
-        ::v-deep .bold {
-          font-weight: 600;
-        }
+      .val {
+        color: #60635a;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.1px;
+        margin-right: 6px;
+      }
+
+      ::v-deep .bold {
+        font-weight: 600;
       }
     }
 

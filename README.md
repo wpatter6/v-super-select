@@ -2,7 +2,7 @@
 
 [![GNU 3 License](https://img.shields.io/github/license/wpatter6/v-super-select.svg?color=yellowgreen)](https://github.com/wpatter6/v-super-select/blob/master/LICENSE)
 
-An accessible and customizable select/drop down component that features searching and grouping.
+An accessible and customizable select/drop down component that features searching, grouping, and virtual scrolling.
 
 - [Try out the demo sandbox here](https://codesandbox.io/s/v-super-select-demo-8542r)
 
@@ -37,15 +37,16 @@ An accessible and customizable select/drop down component that features searchin
 
 <!-- @vuese:VSuperSelect:events:start -->
 
-| Event Name | Description                       | Parameters         |
-| ---------- | --------------------------------- | ------------------ |
-| input      | For v-model binding               | The selected value |
-| change     | -                                 | The selected value |
-| opened     | Fired when the dropdown is opened | -                  |
-| closed     | Fired when the dropdown is closed | -                  |
-| keyup      | Keyup event from filter input     | -                  |
-| keypress   | Keypress event from filter input  | -                  |
-| keydown    | Keydown event from filter input   | -                  |
+| Event Name           | Description                       | Parameters              |
+| -------------------- | --------------------------------- | ----------------------- |
+| input                | For v-model binding               | The selected item       |
+| change               | -                                 | The selected item       |
+| selectedIndexChanged | -                                 | The selected item index |
+| opened               | Fired when the dropdown is opened | -                       |
+| closed               | Fired when the dropdown is closed | -                       |
+| keyup                | Keyup event from filter input     | -                       |
+| keypress             | Keypress event from filter input  | -                       |
+| keydown              | Keydown event from filter input   | -                       |
 
 <!-- @vuese:VSuperSelect:events:end -->
 
@@ -53,12 +54,13 @@ An accessible and customizable select/drop down component that features searchin
 
 <!-- @vuese:VSuperSelect:slots:start -->
 
-| Name       | Description                                                                                            |
-| ---------- | ------------------------------------------------------------------------------------------------------ |
-| label      | Use to format label                                                                                    |
-| item       | Use to format your list items however you like. Use `item.$html` to show bolded search values.         |
-| group-item | Use to format your grouped list items however you like. Use `item.$html` to show bolded search values. |
-| default    | Add items the old way with option tags, ex: &lt;option value="1"&gt;Item 1&lt;/option&gt;              |
+| Name       | Description                                                                                    | Scope Variables |
+| ---------- | ---------------------------------------------------------------------------------------------- | --------------- |
+| label      | Use to format label                                                                            | label           |
+| item       | Use to format your list items however you like. Use `item.$html` to show bolded search values. | item            |
+| group      | Use to format your group header list items however you like.                                   | group           |
+| none-found | Use to format your 'none found' item however you like.                                         | text            |
+| default    | Add items the old way with option tags, ex: &lt;option value="1"&gt;Item 1&lt;/option&gt;      | -               |
 
 <!-- @vuese:VSuperSelect:slots:end -->
 

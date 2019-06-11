@@ -33,35 +33,19 @@ export default Vue.extend({
           value: '2',
         },
       ],
-      groupedItems: [
-        {
-          groupName: 'Group 1',
-          items: [
-            {
-              text: 'First Group First Item',
-              value: '1',
-            },
-            {
-              text: 'First Group Second Item',
-              value: '2',
-            },
-          ],
-        },
-        {
-          groupName: 'Group 2',
-          items: [
-            {
-              text: 'Second Group First Item',
-              value: '3',
-            },
-
-            {
-              text: 'Second Group Second Item',
-              value: '4',
-            },
-          ],
-        },
-      ],
+      groupedItems: Array(100)
+        .join()
+        .split(',')
+        .map((u, i) => ({
+          groupName: 'Group ' + i,
+          items: Array(20)
+            .join()
+            .split(',')
+            .map((v, j) => ({
+              text: 'Group ' + i + ' Item ' + j,
+              value: 'g' + i + 'i' + j,
+            })),
+        })),
     }
   },
   components: {
