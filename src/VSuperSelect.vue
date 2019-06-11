@@ -16,6 +16,7 @@
       </slot>
       <input
         type="text"
+        ref="input"
         @focus="showDropdown"
         @blur="hideDropdown"
         @keydown.stop="$_keyTextBox"
@@ -34,7 +35,7 @@
           v-for="item in flattenedItems"
           :key="item.$id"
           :class="{ item: item.$isItem, group: item.$isGroup, active: item.$isActive }"
-          @click="!item.$isGroup && selectItem(item)"
+          @click="item.$isItem && selectItem(item)"
         >
           <slot v-if="item.$isGroup" name="group" :group="item">
             <div class="group-name">{{ item[groupNameField] }}</div>
@@ -169,6 +170,7 @@ export default Vue.extend({
       this.prevText = this.inputText = item ? item[this.textField] : null
       this.activeIndex = item ? this.ungroupedItems.indexOf(item) : null
       this.selectedIndex = item ? item.$index : null
+      this.$refs.input.focus()
       this.$emit('input', item)
       this.$emit('change', item)
       this.$emit('selectedIndexChanged', this.selectedIndex)
@@ -180,13 +182,14 @@ export default Vue.extend({
     // Used to hide the dropdown
     hideDropdown(): void {
       setTimeout(() => {
+        console.log('HIDE DROPDOWN')
         this.dropdownVisible = false
         this.originalFilter = null
         if (!this.inputText && this.prevText) {
           this.inputText = this.prevText
         }
         this.$emit('closed')
-      }, 100)
+      }, 200)
     },
     // Used to show the dropdown
     showDropdown(): void {
@@ -220,6 +223,9 @@ export default Vue.extend({
         return
       }
       console.log('key', e.key)
+      if (e.key !== 'Tab' && !this.dropdownVisible) {
+        this.showDropdown()
+      }
 
       if (e.key === 'ArrowDown' || e.key === 'PageDown') {
         e.preventDefault()
