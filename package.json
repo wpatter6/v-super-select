@@ -1,10 +1,11 @@
 {
   "name": "v-super-select",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "private": false,
   "main": "dist/v-super-select.common.js",
   "module": "dist/v-super-select.common.js",
   "unpkg": "dist/v-super-select.common.js",
+  "types": "dist/VSuperSelect.d.ts",
   "license": "GPL-3.0-or-later",
   "keywords": [
     "vue",
@@ -23,7 +24,8 @@
   "files": [
     "dist/*",
     "src/*",
-    "public/*"
+    "public/*",
+    "*.json"
   ],
   "scripts": {
     "serve": "vue-cli-service serve",

@@ -1,3 +1,5 @@
+const typings = process.env.TYPE_DEFINITIONS === 'true'
+
 module.exports = {
   pages: {
     demo: {
@@ -11,5 +13,23 @@ module.exports = {
   },
   css: {
     extract: false,
+  },
+  configureWebpack: {
+    output: {
+      libraryExport: 'default',
+    },
+  },
+  parallel: !typings,
+  chainWebpack: config => {
+    typings &&
+      config.module
+        .rule('ts')
+        .use('ts-loader')
+        .loader('ts-loader')
+        .tap(opts => {
+          opts.transpileOnly = false
+          opts.happyPackMode = false
+          return opts
+        })
   },
 }

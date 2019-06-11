@@ -72,8 +72,6 @@
 
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-/* import { RecycleScroller as Scroller } from 'vue-virtual-scroller'
-import 'vue-virtual-scroller/dist/vue-virtual-scroller.css' */
 import Scroller from 'vue-virtual-scroll-list'
 
 export default Vue.extend({
@@ -496,6 +494,10 @@ export default Vue.extend({
   letter-spacing: 0.09px;
   font-weight: 400;
 
+  * {
+    box-sizing: border-box;
+  }
+
   .select-input {
     border: 1px solid #aeb0ab;
     background-color: #fff;
@@ -542,6 +544,7 @@ export default Vue.extend({
     justify-content: flex-start;
     padding: 8px 3px 4px 0;
     max-height: var(--dropDownMaxHeight, 300px);
+    overflow-x: hidden;
 
     & > *::v-deep {
       &::-webkit-scrollbar-track {
@@ -567,6 +570,7 @@ export default Vue.extend({
       position: sticky;
       top: -1px;
       background-color: #fff;
+      width: 100%;
 
       .group-name {
         height: var(--itemHeight, 40px);

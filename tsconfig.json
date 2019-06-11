@@ -14,7 +14,9 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "declarationDir": "dist",
+    "declaration": true
   },
   "include": [
     "src/**/*.ts",
