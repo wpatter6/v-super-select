@@ -23,6 +23,7 @@ exports[`VSuperSelect.vue will match snapshot 1`] = `
     <!---->
   </div>
   <div style="display: none;"></div>
+  <div aria-live="polite" aria-relevant="additions" class="assistive-text"></div>
 </div>
 `;
 
@@ -134,5 +135,6 @@ exports[`VSuperSelect.vue will match snapshot 2: 2 1`] = `
     <!---->
   </div>
   <div style="display: none;"></div>
+  <div aria-live="polite" aria-relevant="additions" class="assistive-text"></div>
 </div>
 `;
