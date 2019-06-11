@@ -18,9 +18,9 @@
         type="text"
         @focus="showDropdown"
         @blur="hideDropdown"
-        @keydown="$_keyTextBox"
-        @keypress="$_keyTextBox"
-        @keyup="$_keyTextBox"
+        @keydown.stop="$_keyTextBox"
+        @keypress.stop="$_keyTextBox"
+        @keyup.stop="$_keyTextBox"
         :placeholder="placeholder"
         v-model="inputText"
         aria-role="listbox"
@@ -219,22 +219,33 @@ export default Vue.extend({
       if (e.type !== 'keydown') {
         return
       }
+      console.log('key', e.key)
 
-      if (e.key === 'ArrowDown') {
-        if (this.activeIndex >= this.ungroupedItems.length - 1) {
-          this.activeIndex = 0
-        } else {
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+        if (e.key === 'ArrowDown') {
           this.activeIndex++
+        } else {
+          this.activeIndex += this.remainCount
         }
+
+        if (this.activeIndex > this.ungroupedItems.length - 1) {
+          this.activeIndex = 0
+        }
+
         if (this.originalFilter === null) {
           this.originalFilter = this.inputText
         }
-      } else if (e.key === 'ArrowUp') {
-        if (this.activeIndex <= 0) {
-          this.activeIndex = this.ungroupedItems.length - 1
-        } else {
+      } else if (e.key === 'ArrowUp' || e.key === 'PageDown') {
+        if (e.key === 'ArrowUp') {
           this.activeIndex--
+        } else {
+          this.activeIndex -= this.remainCount
         }
+
+        if (this.activeIndex < 0) {
+          this.activeIndex = this.ungroupedItems.length - 1
+        }
+
         if (this.originalFilter === null) {
           this.originalFilter = this.inputText
         }
@@ -258,6 +269,8 @@ export default Vue.extend({
       } else if (e.key === 'Escape') {
         this.clearSelection()
         this.hideDropdown()
+        return
+      } else {
         return
       }
 
