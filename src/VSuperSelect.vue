@@ -5,7 +5,8 @@
     :style="{
       '--boxHeight': inputHeight,
       '--boxWidth': inputWidth,
-      '--dropDownMaxHeight': dropdownMaxHeightCalc
+      '--dropDownMaxHeight': dropdownMaxHeightCalc,
+      '--itemHeight': itemHeight + 'px',
     }"
   >
     <label ref="field" class="select-input" @click="showDropdown">
@@ -161,6 +162,11 @@ export default Vue.extend({
       type: String,
       default: '185px',
     },
+    // Height in pixels of each individual item
+    itemHeight: {
+      type: Number,
+      default: 40,
+    },
     // Css max height of dropdown
     dropDownMaxHeight: [Number, String],
   },
@@ -181,7 +187,9 @@ export default Vue.extend({
     selectItem(item: any, itemIndex?: number): void {
       const val = item ? item[this.valueField] : null
       this.prevText = this.inputText = item ? item[this.textField] : null
-      this.selectedIndex = item ? itemIndex || this.flattenedItems.indexOf(item) : null
+      this.selectedIndex = item
+        ? itemIndex || this.flattenedItems.indexOf(item)
+        : null
       this.$emit('input', val)
       this.$emit('change', val)
     },
@@ -204,12 +212,16 @@ export default Vue.extend({
     showDropdown(): void {
       this.inputText = ''
       this.dropdownVisible = true
-      this.dropdownMaxHeightCalc = this.dropDownMaxHeight || this.getDropdownMaxHeight() + 'px'
+      this.dropdownMaxHeightCalc =
+        this.dropDownMaxHeight || this.getDropdownMaxHeight() + 'px'
 
       this.$emit('opened')
     },
     getDropdownMaxHeight(): number {
-      const underResult = window.innerHeight - this.$refs.field.getBoundingClientRect().bottom - 10
+      const underResult =
+        window.innerHeight -
+        this.$refs.field.getBoundingClientRect().bottom -
+        10
       console.log(underResult)
       if (underResult > 150) {
         this.dropdownAbove = false
@@ -448,7 +460,7 @@ export default Vue.extend({
         color: #2e3a30;
 
         .group-name {
-          height: 44px;
+          height: var(--itemHeight, 40px);
           display: flex;
           align-items: center;
           font-weight: 600;
@@ -460,7 +472,7 @@ export default Vue.extend({
       }
 
       .item {
-        height: 40px;
+        height: var(--itemHeight, 40px);
         color: #2e3a30;
         display: flex;
         align-items: center;
@@ -490,7 +502,7 @@ export default Vue.extend({
 
     &.above {
       margin-top: 0;
-      bottom: calc(24px + var(--boxHeight, 300px))
+      bottom: calc(24px + var(--boxHeight, 300px));
     }
   }
 

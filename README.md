@@ -26,8 +26,9 @@ An accessible and customizable select/drop down component that features searchin
 | iconClassField    | Property of the item that contains the icon class.                                            | `String`  | `false`  | 'iconClass'         |
 | showValue         | Indicates if the value of each item should be shown on the right side of the item.            | `Boolean` | `false`  | true                |
 | noneFoundText     | Text to display when no items are found.                                                      | `String`  | `false`  | 'No Results Found'  |
-| inputHeight       | Css height of the textbox container                                                           | `String`  | `false`  | -                   |
-| inputWidth        | Css width of the textbox container                                                            | `String`  | `false`  | -                   |
+| itemHeight        | Height in pixels of each individual item                                                      | `Number`  | `false`  | 40                  |
+| inputHeight       | Css height of the textbox container                                                           | `String`  | `false`  | '52px'              |
+| inputWidth        | Css width of the textbox container                                                            | `String`  | `false`  | '185px'             |
 | dropDownMaxHeight | Css max height of dropdown. Will default to calculated bottom of textbox to bottom of window. | `String`  | `false`  | -                   |
 
 <!-- @vuese:VSuperSelect:props:end -->
@@ -52,12 +53,12 @@ An accessible and customizable select/drop down component that features searchin
 
 <!-- @vuese:VSuperSelect:slots:start -->
 
-| Name       | Description                                                                                       |
-| ---------- | ------------------------------------------------------------------------------------------------- |
-| label      | Use to format label                                                                               |
-| item | Use to format your list items however you like. Use `item.$html` to show bolded search values. |
+| Name       | Description                                                                                            |
+| ---------- | ------------------------------------------------------------------------------------------------------ |
+| label      | Use to format label                                                                                    |
+| item       | Use to format your list items however you like. Use `item.$html` to show bolded search values.         |
 | group-item | Use to format your grouped list items however you like. Use `item.$html` to show bolded search values. |
-| default    | Add items the old way with option tags, ex: &lt;option value="1"&gt;Item 1&lt;/option&gt;         |
+| default    | Add items the old way with option tags, ex: &lt;option value="1"&gt;Item 1&lt;/option&gt;              |
 
 <!-- @vuese:VSuperSelect:slots:end -->
 
