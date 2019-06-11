@@ -320,7 +320,7 @@ export default Vue.extend({
               this.$_itemMatchesInputText(item),
             ),
           ),
-        }))
+        })).filter((group: any) => group[this.childrenField].length)
       }
 
       if (this.items) {
