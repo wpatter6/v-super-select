@@ -222,6 +222,7 @@ export default Vue.extend({
       console.log('key', e.key)
 
       if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+        e.preventDefault()
         if (e.key === 'ArrowDown') {
           this.activeIndex++
         } else {
@@ -235,7 +236,8 @@ export default Vue.extend({
         if (this.originalFilter === null) {
           this.originalFilter = this.inputText
         }
-      } else if (e.key === 'ArrowUp' || e.key === 'PageDown') {
+      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+        e.preventDefault()
         if (e.key === 'ArrowUp') {
           this.activeIndex--
         } else {
@@ -278,23 +280,23 @@ export default Vue.extend({
       const realIndex =
         this.activeIndex + (this.activeItem.$groupIndex + 1 || 0)
       const scrollPos = realIndex * this.itemHeight
-      const scrollAmt = Math.ceil((this.remainCount * this.itemHeight) / 1.5)
+      const scrollHeight = this.remainCount * this.itemHeight
 
       if (realIndex === this.flattenedItems.length - 1) {
         scrollEl.scrollTo(0, scrollEl.scrollHeight)
       } else if (this.activeIndex === 0) {
         scrollEl.scrollTo(0, 0)
-      } else if (scrollPos < scrollEl.scrollTop) {
-        scrollEl.scrollBy({
-          top: -1 * scrollAmt,
+      } else if (scrollPos < scrollEl.scrollTop + this.itemHeight) {
+        scrollEl.scrollTo({
+          top: scrollPos - scrollHeight + this.itemHeight * 2,
           behavior: 'smooth',
         })
       } else if (
         scrollPos + this.itemHeight >
         scrollEl.scrollTop + scrollEl.offsetHeight
       ) {
-        scrollEl.scrollBy({
-          top: scrollAmt,
+        scrollEl.scrollTo({
+          top: scrollPos - this.itemHeight * 2,
           behavior: 'smooth',
         })
       }
@@ -531,6 +533,9 @@ export default Vue.extend({
       align-items: flex-start;
       justify-content: flex-start;
       color: #2e3a30;
+      position: sticky;
+      top: -1px;
+      background-color: #fff;
 
       .group-name {
         height: var(--itemHeight, 40px);
