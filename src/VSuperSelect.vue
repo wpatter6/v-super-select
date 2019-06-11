@@ -161,14 +161,14 @@ export default Vue.extend({
     return {
       inputText: '',
       prevText: '',
-      activeIndex: null,
-      selectedIndex: null,
-      originalFilter: null,
+      activeIndex: null as number | null,
+      selectedIndex: null as number | null,
+      originalFilter: '',
       dropdownVisible: false,
       dropdownMaxHeightCalc: this.dropDownMaxHeight,
       dropdownAbove: false,
       isMounted: false,
-      textToRead: [],
+      textToRead: [] as string[],
     }
   },
   methods: {
@@ -177,11 +177,13 @@ export default Vue.extend({
       if (this.disabled) {
         return
       }
+
+      const f = (this.$refs.input as HTMLElement).focus()
       const val = item ? item[this.valueField] : null
       this.prevText = this.inputText = item ? item[this.textField] : null
       this.activeIndex = item ? this.ungroupedItems.indexOf(item) : null
       this.selectedIndex = item ? item.$index : null
-      this.$refs.input.focus()
+
       this.readText(!item ? 'Selection cleared' : 'Selected item')
       this.$emit('input', item)
       this.$emit('change', item)
@@ -199,7 +201,7 @@ export default Vue.extend({
       setTimeout(() => {
         console.log('HIDE DROPDOWN')
         this.dropdownVisible = false
-        this.originalFilter = null
+        this.originalFilter = ''
         if (!this.inputText && this.prevText) {
           this.inputText = this.prevText
         }
@@ -227,7 +229,7 @@ export default Vue.extend({
       }
       const underResult =
         window.innerHeight -
-        this.$refs.field.getBoundingClientRect().bottom -
+        (this.$refs.field as Element).getBoundingClientRect().bottom -
         20
       if (underResult > 200) {
         this.dropdownAbove = false
@@ -235,7 +237,10 @@ export default Vue.extend({
       }
       this.dropdownAbove = true
       return (
-        window.innerHeight - underResult - this.$refs.field.offsetHeight - 60
+        window.innerHeight -
+        underResult -
+        (this.$refs.field as HTMLElement).offsetHeight -
+        60
       )
     },
     $_keyTextBox(e: KeyboardEvent): void {
@@ -251,9 +256,9 @@ export default Vue.extend({
       if (e.key === 'ArrowDown' || e.key === 'PageDown') {
         e.preventDefault()
         if (e.key === 'ArrowDown') {
-          this.activeIndex++
+          this.activeIndex = (this.activeIndex || 0) + 1
         } else {
-          this.activeIndex += this.remainCount
+          this.activeIndex = (this.activeIndex || 0) + this.remainCount
         }
 
         if (this.activeIndex > this.ungroupedItems.length - 1) {
@@ -266,9 +271,9 @@ export default Vue.extend({
       } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
         e.preventDefault()
         if (e.key === 'ArrowUp') {
-          this.activeIndex--
+          this.activeIndex = (this.activeIndex || 0) - 1
         } else {
-          this.activeIndex -= this.remainCount
+          this.activeIndex = (this.activeIndex || 0) - this.remainCount
         }
 
         if (this.activeIndex < 0) {
@@ -303,7 +308,8 @@ export default Vue.extend({
         return
       }
 
-      const scrollEl = this.$refs.dropdown.children[0]
+      const scrollEl = (this.$refs.dropdown as Element)
+        .children[0] as HTMLElement
       const realIndex =
         this.activeIndex + (this.activeItem.$groupIndex + 1 || 0)
       const scrollPos = realIndex * this.itemHeight
@@ -338,7 +344,7 @@ export default Vue.extend({
         ? true
         : item &&
             item[this.textField] &&
-            this.filterText &&
+            !!this.filterText &&
             (item[this.textField]
               .toLowerCase()
               .indexOf(this.filterText.toLowerCase()) > -1 ||
@@ -369,7 +375,7 @@ export default Vue.extend({
         $isActive: index + lastItemIndex === this.activeIndex,
       }))
     },
-  } as any,
+  },
   computed: {
     itemsFromSlot(): any[] | null {
       if (this.isMounted && this.$slots.default) {
@@ -417,7 +423,7 @@ export default Vue.extend({
           ),
         )
       }
-      if (this.loaded) {
+      if (this.isMounted) {
         console.error('Items were not found to display in v-super-select')
       }
       return []
@@ -426,7 +432,7 @@ export default Vue.extend({
       return (
         this.items &&
         this.items.length > 0 &&
-        !!this.items[0][this.groupNameField]
+        !!(this.items[0] as any)[this.groupNameField]
       )
     },
     activeItem(): any {
@@ -462,7 +468,7 @@ export default Vue.extend({
       )
       return result
     },
-    filterText(): string | null {
+    filterText(): string {
       return (
         (this.originalFilter === null ? this.inputText : this.originalFilter) ||
         ''
