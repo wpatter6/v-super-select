@@ -220,8 +220,6 @@ export default Vue.extend({
         return
       }
 
-      const scrollEl = this.$refs.dropdown.children[0]
-
       if (e.key === 'ArrowDown') {
         if (this.activeIndex >= this.ungroupedItems.length - 1) {
           this.activeIndex = 0
@@ -231,21 +229,6 @@ export default Vue.extend({
         if (this.originalFilter === null) {
           this.originalFilter = this.inputText
         }
-
-        /* const realIndex = this.activeIndex + this.activeItem.$groupIndex + 1
-        console.log(realIndex);
-
-        if (this.activeIndex === 0) {
-          scrollEl.scrollTo(0, 0)
-        } else if (
-          realIndex % this.remainCount === 1 &&
-          this.activeIndex !== 1
-        ) {
-          scrollEl.scrollBy({
-            top: Math.floor(this.remainCount / 2) * this.itemHeight,
-            behavior: 'smooth',
-          })
-        } */
       } else if (e.key === 'ArrowUp') {
         if (this.activeIndex <= 0) {
           this.activeIndex = this.ungroupedItems.length - 1
@@ -275,6 +258,32 @@ export default Vue.extend({
       } else if (e.key === 'Escape') {
         this.clearSelection()
         this.hideDropdown()
+        return
+      }
+
+      const scrollEl = this.$refs.dropdown.children[0]
+      const realIndex =
+        this.activeIndex + (this.activeItem.$groupIndex + 1 || 0)
+      const scrollPos = realIndex * this.itemHeight
+      const scrollAmt = Math.ceil((this.remainCount * this.itemHeight) / 1.5)
+
+      if (realIndex === this.flattenedItems.length - 1) {
+        scrollEl.scrollTo(0, scrollEl.scrollHeight)
+      } else if (this.activeIndex === 0) {
+        scrollEl.scrollTo(0, 0)
+      } else if (scrollPos < scrollEl.scrollTop) {
+        scrollEl.scrollBy({
+          top: -1 * scrollAmt,
+          behavior: 'smooth',
+        })
+      } else if (
+        scrollPos + this.itemHeight >
+        scrollEl.scrollTop + scrollEl.offsetHeight
+      ) {
+        scrollEl.scrollBy({
+          top: scrollAmt,
+          behavior: 'smooth',
+        })
       }
     },
     $_itemMatchesInputText(item: any): boolean {
@@ -307,6 +316,7 @@ export default Vue.extend({
         ...item,
         $isItem: true,
         $index: index + lastItemIndex,
+        $groupIndex: groupIndex,
         $id: item[this.valueField] + '_item',
         $html: this.$_highlightTextString(item[this.textField]),
         $isActive: index + lastItemIndex === this.activeIndex,
