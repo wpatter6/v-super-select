@@ -175,9 +175,7 @@ export default Vue.extend({
       this.activeIndex = item ? this.ungroupedItems.indexOf(item) : null
       this.selectedIndex = item ? item.$index : null
       this.$refs.input.focus()
-      this.readText(
-        !item ? 'Selection cleared' : 'Selected item ' + this.inputText,
-      )
+      this.readText(!item ? 'Selection cleared' : 'Selected item')
       this.$emit('input', item)
       this.$emit('change', item)
       this.$emit('selectedIndexChanged', this.selectedIndex)
