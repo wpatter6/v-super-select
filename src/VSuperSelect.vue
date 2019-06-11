@@ -63,6 +63,9 @@
       <!-- Optional slot to add items the 'old' way with option tags, ex: <option value="1">Item 1</option>-->
       <slot></slot>
     </div>
+    <div class="assistive-text" aria-live="polite" aria-relevant="additions">
+      <div v-for="(text, index) in textToRead" :key="index">{{text}}</div>
+    </div>
   </div>
 </template>
 
@@ -161,6 +164,7 @@ export default Vue.extend({
       dropdownMaxHeightCalc: this.dropDownMaxHeight,
       dropdownAbove: false,
       isMounted: false,
+      textToRead: [],
     }
   },
   methods: {
@@ -171,6 +175,9 @@ export default Vue.extend({
       this.activeIndex = item ? this.ungroupedItems.indexOf(item) : null
       this.selectedIndex = item ? item.$index : null
       this.$refs.input.focus()
+      this.readText(
+        !item ? 'Selection cleared' : 'Selected item ' + this.inputText,
+      )
       this.$emit('input', item)
       this.$emit('change', item)
       this.$emit('selectedIndexChanged', this.selectedIndex)
@@ -200,6 +207,9 @@ export default Vue.extend({
 
       this.$emit('opened')
     },
+    readText(text: string): void {
+      this.textToRead.push(text)
+    },
     $_getDropdownMaxHeight(): number {
       if (!this.isMounted) {
         return 300
@@ -222,7 +232,7 @@ export default Vue.extend({
       if (e.type !== 'keydown') {
         return
       }
-      console.log('key', e.key)
+
       if (e.key !== 'Tab' && !this.dropdownVisible) {
         this.showDropdown()
       }
@@ -306,6 +316,11 @@ export default Vue.extend({
           behavior: 'smooth',
         })
       }
+
+      this.readText(
+        this.activeItem[this.textField] +
+          (this.showValue ? ' ' + this.activeItem[this.valueField] : ''),
+      )
     },
     $_itemMatchesInputText(item: any): boolean {
       return !this.filterText
@@ -605,6 +620,17 @@ export default Vue.extend({
     .select-dropdown {
       display: flex;
     }
+  }
+
+  .assistive-text {
+    position: absolute;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
   }
 }
 </style>
