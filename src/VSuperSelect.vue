@@ -23,7 +23,8 @@
         @keypress.stop="$_keyTextBox"
         @keyup.stop="$_keyTextBox"
         :placeholder="placeholder"
-        v-model="inputText"
+        v-model.lazy="inputText"
+        v-debounce="500"
         aria-role="listbox"
         :name="name"
         :autocomplete="autocomplete"
@@ -35,7 +36,7 @@
         <div
           v-for="item in flattenedItems"
           :key="item.$id"
-          :class="{ item: item.$isItem, group: item.$isGroup, active: item.$isActive }"
+          :class="{ item: item.$isItem, group: item.$isGroup, active: activeItem && item[valueField] === activeItem[valueField] }"
           @click="item.$isItem && selectItem(item)"
         >
           <slot v-if="item.$isGroup" name="group" :group="item">
@@ -73,6 +74,7 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
 import Scroller from 'vue-virtual-scroll-list'
+import debounce from 'v-debounce'
 
 export default Vue.extend({
   props: {
@@ -340,23 +342,33 @@ export default Vue.extend({
       )
     },
     $_itemMatchesInputText(item: any): boolean {
-      return !this.filterText
-        ? true
-        : item &&
-            item[this.textField] &&
-            !!this.filterText &&
-            (item[this.textField]
-              .toLowerCase()
-              .indexOf(this.filterText.toLowerCase()) > -1 ||
-              item[this.valueField].toLowerCase() ===
-                this.filterText.toLowerCase())
+      if (!item || !item[this.textField]) {
+        return false
+      }
+
+      if (!this.filterText) {
+        return true
+      }
+
+      if (
+        item[this.textField]
+          .toLowerCase()
+          .indexOf(this.filterText.toLowerCase()) > -1
+      ) {
+        return true
+      }
+
+      if (
+        item[this.valueField].toLowerCase() === this.filterText.toLowerCase()
+      ) {
+        return true
+      }
+
+      return false
     },
     $_highlightTextString(val: string): string {
       if (this.filterText) {
-        return val.replace(
-          new RegExp(`(${this.filterText})`, 'gi'),
-          '<span class="bold">$1</span>',
-        )
+        return val.replace(this.highlightRegexp, '<span class="bold">$1</span>')
       }
       return val
     },
@@ -372,7 +384,6 @@ export default Vue.extend({
         $groupIndex: groupIndex,
         $id: item[this.valueField] + '_item',
         $html: this.$_highlightTextString(item[this.textField]),
-        $isActive: index + lastItemIndex === this.activeIndex,
       }))
     },
   },
@@ -402,7 +413,7 @@ export default Vue.extend({
               group[this.childrenField],
               index,
               len,
-            ).filter((item: any) => this.$_itemMatchesInputText(item)),
+            ).filter(this.$_itemMatchesInputText),
           })
           len += group[this.childrenField].length
         })
@@ -412,15 +423,13 @@ export default Vue.extend({
 
       if (this.items) {
         return this.$_normalizeItems(
-          this.items.filter((item: any) => this.$_itemMatchesInputText(item)),
+          this.items.filter(this.$_itemMatchesInputText),
         )
       }
 
       if (this.itemsFromSlot) {
         return this.$_normalizeItems(
-          this.itemsFromSlot.filter((item: any) =>
-            this.$_itemMatchesInputText(item),
-          ),
+          this.itemsFromSlot.filter(this.$_itemMatchesInputText),
         )
       }
       if (this.isMounted) {
@@ -469,10 +478,10 @@ export default Vue.extend({
       return result
     },
     filterText(): string {
-      return (
-        (this.originalFilter === null ? this.inputText : this.originalFilter) ||
-        ''
-      )
+      return (!this.originalFilter ? this.inputText : this.originalFilter) || ''
+    },
+    filterTextEscaped(): string {
+      return this.filterText.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1')
     },
     remainCount(): number {
       return Math.min(
@@ -480,12 +489,18 @@ export default Vue.extend({
         Math.floor(this.$_getDropdownMaxHeight() / this.itemHeight),
       )
     },
+    highlightRegexp(): RegExp {
+      return new RegExp(`(${this.filterTextEscaped})`, 'gi')
+    },
   },
   mounted() {
     this.isMounted = true
   },
   components: {
     Scroller,
+  },
+  directives: {
+    debounce,
   },
 })
 </script>
@@ -496,7 +511,6 @@ export default Vue.extend({
   color: #60635a;
   font-size: 11px;
   line-height: 15px;
-  text-transform: uppercase;
   letter-spacing: 0.09px;
   font-weight: 400;
 
@@ -515,6 +529,7 @@ export default Vue.extend({
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
+    text-transform: uppercase;
 
     input {
       border: 0;
