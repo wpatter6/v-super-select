@@ -28,6 +28,7 @@
         aria-role="listbox"
         aria-haspopup="true"
         aria-autocomplete="list"
+        :spellcheck="spellcheck ? 'true' : 'false'"
         :aria-owns="'super-select-dropdown-' + uid"
         :aria-label="label"
         :name="name"
@@ -96,7 +97,9 @@ export default Vue.extend({
     // The label of the text input.
     name: String,
     // For v-model binding to selected value.
-    value: String,
+    value: {
+      type: [String, Object],
+    },
     // Data items to display in the drop down.
     items: Array,
     // Field is disabled
@@ -170,7 +173,9 @@ export default Vue.extend({
       default: 40,
     },
     // Css max height of dropdown
-    dropDownMaxHeight: [Number, String],
+    dropDownMaxHeight: {
+      type: [Number, String],
+    },
     // Amount of time to wait after user input before filtering is performed
     debounceTime: {
       type: Number,
@@ -181,6 +186,8 @@ export default Vue.extend({
       type: [String, Array],
       default: () => [],
     },
+    // Allows enabling browser spellcheck on input field.
+    spellcheck: Boolean,
   },
   data() {
     return {
@@ -211,8 +218,8 @@ export default Vue.extend({
       this.selectedIndex = item ? item.$index : null
 
       this.readText(!item ? 'Selection cleared' : 'Selected item')
-      this.$emit('input', item)
-      this.$emit('change', item)
+      this.$emit('input', this.valueIsString ? item[this.valueField] : item)
+      this.$emit('change', this.valueIsString ? item[this.valueField] : item)
       this.$emit('selectedIndexChanged', this.selectedIndex)
     },
     // Clears the drop down selection.
@@ -524,6 +531,10 @@ export default Vue.extend({
       return new RegExp(`(${this.filterTextEscaped})`, 'gi')
     },
     ariaText(): string {
+      if (!this.activeItem) {
+        return ''
+      }
+
       return `${this.activeItem[this.textField]} ${(this.activeIndex || 0) +
         1} of ${this.ungroupedItems.length}`
     },
@@ -532,6 +543,9 @@ export default Vue.extend({
         return this.searchFields.split(',')
       }
       return this.searchFields as string[]
+    },
+    valueIsString(): boolean {
+      return typeof this.value === 'string'
     },
   },
   mounted() {

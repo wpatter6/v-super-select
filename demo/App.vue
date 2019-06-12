@@ -26,7 +26,9 @@
         value-field="code"
         group-name-field="headerText"
         children-field="children"
+        v-model="irregularValue"
       ></v-super-select>
+      <div>{{ JSON.stringify(irregularValue) }}</div>
     </section>
   </div>
 </template>
@@ -126,6 +128,7 @@ export default Vue.extend({
           ],
         },
       ],
+      irregularValue: null,
     }
   },
   components: {

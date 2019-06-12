@@ -33,6 +33,7 @@ An accessible and customizable select/drop down component that features searchin
 | dropDownMaxHeight | Css max height of dropdown. Will default to calculated bottom of textbox to bottom of window.                                                              | `String`            | `false`  | -                   |
 | debounceTime      | Amount of milliseconds to wait after inputs before search is performed.                                                                                    | `Number`            | `false`  | `250`               |
 | searchFields      | Additional item properties besides `textField` and `valueField` to include when searches are performed. Can be comma delimited string or array of strings. | `String | String[]` | `false`  | `[]`                |
+| spellcheck        | Allows enabling browser spellcheck on input field.                                                                                                         | `Boolean`           | `false`  | `false`             |
 
 <!-- @vuese:VSuperSelect:props:end -->
 
