@@ -572,6 +572,7 @@ export default Vue.extend({
   line-height: 15px;
   letter-spacing: 0.09px;
   font-weight: 400;
+  height: var(--boxHeight, 52px);
 
   * {
     box-sizing: border-box;
