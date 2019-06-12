@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`VSuperSelect.vue will match snapshot 1`] = `
-<div class="select-container"><label aria-hidden="true" class="select-input"><span class="label"></span> <input type="text" placeholder="Select an Item..." aria-role="none" aria-haspopup="true" aria-autocomplete="list" aria-owns="super-select-dropdown-0" autocomplete="nope"></label>
+<div class="select-container"><label aria-hidden="true" class="select-input"><span class="label"></span> <input type="text" placeholder="Select an Item..." aria-role="listbox" aria-haspopup="true" aria-autocomplete="list" aria-owns="super-select-dropdown-0" autocomplete="nope"></label>
   <div id="super-select-dropdown-0" class="select-dropdown">
     <scroller-stub size="40" remain="3" rtag="div" wtag="div" wclass="" start="0" offset="0" bench="0" debounce="0" itemcount="0" itemprops="function _default() {}">
       <div aria-role="option" class="item active">
@@ -28,7 +28,7 @@ exports[`VSuperSelect.vue will match snapshot 1`] = `
 `;
 
 exports[`VSuperSelect.vue will match snapshot 2: 2 1`] = `
-<div class="select-container"><label aria-hidden="true" class="select-input"><span class="label"></span> <input type="text" placeholder="Select an Item..." aria-role="none" aria-haspopup="true" aria-autocomplete="list" aria-owns="super-select-dropdown-1" autocomplete="nope"></label>
+<div class="select-container"><label aria-hidden="true" class="select-input"><span class="label"></span> <input type="text" placeholder="Select an Item..." aria-role="listbox" aria-haspopup="true" aria-autocomplete="list" aria-owns="super-select-dropdown-1" autocomplete="nope"></label>
   <div id="super-select-dropdown-1" class="select-dropdown">
     <scroller-stub size="40" remain="18" rtag="div" wtag="div" wclass="" start="0" offset="0" bench="0" debounce="0" itemcount="0" itemprops="function _default() {}">
       <div aria-role="option" class="item active">
