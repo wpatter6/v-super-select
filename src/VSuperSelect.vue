@@ -56,7 +56,8 @@
             </slot>
             <slot v-else-if="item.$isItem" name="item" :item="item">
               <div class="text">
-                <i v-if="item.icon" class="icon" :class="item.icon"/>
+                <i v-if="item[iconClassField]" class="icon" :class="item[iconClassField]"/>
+                <img v-if="item[iconUrlField]" :src="item[iconUrlField]" class="icon-img">
                 <span v-html="item.$html"></span>
               </div>
               <div
@@ -683,6 +684,16 @@ export default Vue.extend({
         &:active,
         &.active {
           background-color: #e9e9e4;
+        }
+
+        .text {
+          display: flex;
+          align-items: center;
+
+          .icon,
+          .icon-img {
+            margin-right: 10px;
+          }
         }
 
         .val {

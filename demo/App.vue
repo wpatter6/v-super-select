@@ -43,12 +43,14 @@ export default Vue.extend({
     return {
       flatItems: [
         {
-          text: 'First Item',
+          text: 'Denver, CO',
           value: '1',
+          iconUrl: require('./assets/nearby-icon.png'),
         },
         {
-          text: 'Second Item',
+          text: 'St. Louis, MO',
           value: '2',
+          iconUrl: require('./assets/nearby-icon.png'),
         },
       ],
       groupedItems: [
