@@ -9,7 +9,7 @@
       '--itemHeight': itemHeight + 'px',
     }"
   >
-    <label ref="field" class="select-input" @click="showDropdown">
+    <label ref="field" class="select-input" aria-hidden="true" @click="showDropdown">
       <!-- Optional slot to format label -->
       <slot name="label" :label="label">
         <span class="label" :label="label">{{label}}</span>
@@ -24,20 +24,30 @@
         @keyup.stop="$_keyTextBox"
         :placeholder="placeholder"
         v-model.lazy="inputText"
-        v-debounce="500"
+        v-debounce="debounceTime"
         aria-role="listbox"
+        aria-haspopup="true"
+        aria-autocomplete="list"
+        :aria-owns="'super-select-dropdown-' + uid"
+        :aria-label="label"
         :name="name"
         :autocomplete="autocomplete"
         :disabled="disabled"
       >
     </label>
-    <div class="select-dropdown" :class="{above: dropdownAbove}" ref="dropdown">
+    <div
+      class="select-dropdown"
+      :id="'super-select-dropdown-' + uid"
+      :class="{above: dropdownAbove}"
+      ref="dropdown"
+    >
       <scroller :size="itemHeight" :remain="remainCount">
         <div
           v-for="item in flattenedItems"
           :key="item.$id"
-          :class="{ item: item.$isItem, group: item.$isGroup, active: activeItem && item[valueField] === activeItem[valueField] }"
+          :class="{ item: item.$isItem, group: item.$isGroup, active: item === activeItem }"
           @click="item.$isItem && selectItem(item)"
+          :aria-role="item.$isItem ? 'option' : false"
         >
           <slot v-if="item.$isGroup" name="group" :group="item">
             <div class="group-name">{{ item[groupNameField] }}</div>
@@ -75,6 +85,7 @@
 import Vue, { VNode } from 'vue'
 import Scroller from 'vue-virtual-scroll-list'
 import debounce from 'v-debounce'
+let uid = 0
 
 export default Vue.extend({
   props: {
@@ -158,12 +169,22 @@ export default Vue.extend({
     },
     // Css max height of dropdown
     dropDownMaxHeight: [Number, String],
+    // Amount of time to wait after user input before filtering is performed
+    debounceTime: {
+      type: Number,
+      default: 250,
+    },
+    // Additional item properties to inspect when searching
+    searchFields: {
+      type: [String, Array],
+      default: () => [],
+    },
   },
   data() {
     return {
       inputText: '',
       prevText: '',
-      activeIndex: null as number | null,
+      activeIndex: 0 as number | null,
       selectedIndex: null as number | null,
       originalFilter: '',
       dropdownVisible: false,
@@ -171,6 +192,7 @@ export default Vue.extend({
       dropdownAbove: false,
       isMounted: false,
       textToRead: [] as string[],
+      uid: uid++,
     }
   },
   methods: {
@@ -201,17 +223,18 @@ export default Vue.extend({
     // Used to hide the dropdown
     hideDropdown(): void {
       setTimeout(() => {
-        console.log('HIDE DROPDOWN')
         this.dropdownVisible = false
         this.originalFilter = ''
         if (!this.inputText && this.prevText) {
           this.inputText = this.prevText
         }
+        this.readText(this.label + ' collapsed')
         this.$emit('closed')
       }, 200)
     },
     // Used to show the dropdown
     showDropdown(): void {
+      console.log('show', this.label)
       if (this.disabled) {
         return
       }
@@ -219,6 +242,7 @@ export default Vue.extend({
       this.dropdownVisible = true
       this.dropdownMaxHeightCalc =
         this.dropDownMaxHeight || this.$_getDropdownMaxHeight() + 'px'
+      this.$_debounceAssistiveText(this.label + ' expanded ' + this.ariaText)
 
       this.$emit('opened')
     },
@@ -286,19 +310,17 @@ export default Vue.extend({
           this.originalFilter = this.inputText
         }
       } else if (e.key === 'Enter' || e.key === 'Tab') {
-        if (this.activeItem) {
+        const codeMatch = this.ungroupedItems.find(
+          (item: any) =>
+            item &&
+            item[this.valueField] &&
+            item[this.valueField].toLowerCase() ===
+              this.filterText.toLowerCase(),
+        )
+        if (codeMatch && this.activeIndex === 0) {
+          this.selectItem(codeMatch)
+        } else if (this.activeItem && (e.key === 'Enter' || this.filterText)) {
           this.selectItem(this.activeItem)
-        } else {
-          const codeMatch = this.ungroupedItems.find(
-            (item: any) =>
-              item &&
-              item[this.valueField] &&
-              item[this.valueField].toLowerCase() ===
-                this.filterText.toLowerCase(),
-          )
-          if (codeMatch) {
-            this.selectItem(codeMatch)
-          }
         }
 
         this.hideDropdown()
@@ -310,36 +332,35 @@ export default Vue.extend({
         return
       }
 
-      const scrollEl = (this.$refs.dropdown as Element)
-        .children[0] as HTMLElement
-      const realIndex =
-        this.activeIndex + (this.activeItem.$groupIndex + 1 || 0)
-      const scrollPos = realIndex * this.itemHeight
-      const scrollHeight = this.remainCount * this.itemHeight
+      if (this.activeItem) {
+        const scrollEl = (this.$refs.dropdown as Element)
+          .children[0] as HTMLElement
+        const realIndex =
+          this.activeIndex + (this.activeItem.$groupIndex + 1 || 0)
+        const scrollPos = realIndex * this.itemHeight
+        const scrollHeight = this.remainCount * this.itemHeight
 
-      if (realIndex === this.flattenedItems.length - 1) {
-        scrollEl.scrollTo(0, scrollEl.scrollHeight)
-      } else if (this.activeIndex === 0) {
-        scrollEl.scrollTo(0, 0)
-      } else if (scrollPos < scrollEl.scrollTop + this.itemHeight) {
-        scrollEl.scrollTo({
-          top: scrollPos - scrollHeight + this.itemHeight * 2,
-          behavior: 'smooth',
-        })
-      } else if (
-        scrollPos + this.itemHeight >
-        scrollEl.scrollTop + scrollEl.offsetHeight
-      ) {
-        scrollEl.scrollTo({
-          top: scrollPos - this.itemHeight * 2,
-          behavior: 'smooth',
-        })
+        if (realIndex === this.flattenedItems.length - 1) {
+          scrollEl.scrollTo(0, scrollEl.scrollHeight)
+        } else if (this.activeIndex === 0) {
+          scrollEl.scrollTo(0, 0)
+        } else if (scrollPos < scrollEl.scrollTop + this.itemHeight) {
+          scrollEl.scrollTo({
+            top: scrollPos - scrollHeight + this.itemHeight * 2,
+            behavior: 'smooth',
+          })
+        } else if (
+          scrollPos + this.itemHeight >
+          scrollEl.scrollTop + scrollEl.offsetHeight
+        ) {
+          scrollEl.scrollTo({
+            top: scrollPos - this.itemHeight * 2,
+            behavior: 'smooth',
+          })
+        }
+
+        this.$_debounceAssistiveText(this.ariaText)
       }
-
-      this.readText(
-        this.activeItem[this.textField] +
-          (this.showValue ? ' ' + this.activeItem[this.valueField] : ''),
-      )
     },
     $_itemMatchesInputText(item: any): boolean {
       if (!item || !item[this.textField]) {
@@ -350,12 +371,14 @@ export default Vue.extend({
         return true
       }
 
-      if (
-        item[this.textField]
-          .toLowerCase()
-          .indexOf(this.filterText.toLowerCase()) > -1
-      ) {
+      if (this.highlightRegexp.test(item[this.textField])) {
         return true
+      }
+
+      for (const field of this.searchFieldArray) {
+        if (this.highlightRegexp.test(item[field])) {
+          return true
+        }
       }
 
       if (
@@ -385,6 +408,9 @@ export default Vue.extend({
         $id: item[this.valueField] + '_item',
         $html: this.$_highlightTextString(item[this.textField]),
       }))
+    },
+    $_debounceAssistiveText(text: string): void {
+      console.error('Assistive text debouncing failure')
     },
   },
   computed: {
@@ -492,8 +518,22 @@ export default Vue.extend({
     highlightRegexp(): RegExp {
       return new RegExp(`(${this.filterTextEscaped})`, 'gi')
     },
+    ariaText(): string {
+      return `${this.activeItem[this.textField]} ${(this.activeIndex || 0) +
+        1} of ${this.ungroupedItems.length}`
+    },
+    searchFieldArray(): string[] {
+      if (typeof this.searchFields === 'string') {
+        return this.searchFields.split(',')
+      }
+      return this.searchFields as string[]
+    },
   },
   mounted() {
+    this.$_debounceAssistiveText = debounce.debounce(
+      (text: string) => this.readText(text),
+      this.debounceTime,
+    )
     this.isMounted = true
   },
   components: {
