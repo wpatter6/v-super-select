@@ -1,155 +1,173 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`VSuperSelect.vue will match snapshot 1`] = `
-<div class="select-container"><label aria-hidden="true" class="select-input"><span class="label"></span> <input type="text" placeholder="Select an Item..." aria-role="listbox" aria-haspopup="true" aria-autocomplete="list" spellcheck="false" aria-owns="super-select-dropdown-0" autocomplete="nope"></label>
-  <div id="super-select-dropdown-0" class="select-dropdown">
-    <scroller-stub size="40" remain="3" rtag="div" wtag="div" wclass="" start="0" offset="0" bench="0" debounce="0" itemcount="0" itemprops="function _default() {}"><span name="list" tag="ul"><li aria-role="option" class="item active"><div class="text"><!----> <!----> <span>Item 0</span>
+<div class="super-select-container">
+  <div class="super-select-mobile-header">
+    <div class="super-select-left-arrow"></div>
+    <div class="super-select-long-label">Select your </div>
+  </div> <label aria-hidden="true" class="super-select-input"><span class="label"></span> <input type="text" placeholder="Select an Item..." aria-role="listbox" aria-haspopup="true" aria-autocomplete="list" spellcheck="false" aria-owns="super-super-select-dropdown-0" autocomplete="nope">
+    <!----></label>
+  <div id="super-super-select-dropdown-0" class="super-select-dropdown">
+    <scroller-stub size="40" remain="3" rtag="div" wtag="div" wclass="" start="0" offset="0" bench="0" debounce="0" itemcount="0" itemprops="function _default() {}">
+      <div aria-role="option" class="super-select-item active">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 0</span></div>
+        <div class="super-select-val">MA==</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 1</span></div>
+        <div class="super-select-val">MQ==</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 2</span></div>
+        <div class="super-select-val">Mg==</div>
+      </div>
+    </scroller-stub>
+    <!---->
   </div>
-  <div class="val">MA==</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 1</span></div>
-    <div class="val">MQ==</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 2</span></div>
-    <div class="val">Mg==</div>
-  </li></span></scroller-stub>
-  <!---->
-</div>
-<div style="display: none;"></div>
-<div aria-live="polite" aria-relevant="additions" class="assistive-text"></div>
+  <div style="display: none;"></div>
+  <div aria-live="polite" aria-relevant="additions" class="super-select-assistive-text"></div>
 </div>
 `;
 
 exports[`VSuperSelect.vue will match snapshot 2: 2 1`] = `
-<div class="select-container"><label aria-hidden="true" class="select-input"><span class="label"></span> <input type="text" placeholder="Select an Item..." aria-role="listbox" aria-haspopup="true" aria-autocomplete="list" spellcheck="false" aria-owns="super-select-dropdown-1" autocomplete="nope"></label>
-  <div id="super-select-dropdown-1" class="select-dropdown">
-    <scroller-stub size="40" remain="18" rtag="div" wtag="div" wclass="" start="0" offset="0" bench="0" debounce="0" itemcount="0" itemprops="function _default() {}"><span name="list" tag="ul"><li aria-role="option" class="item active"><div class="text"><!----> <!----> <span>Item 0</span>
+<div class="super-select-container">
+  <div class="super-select-mobile-header">
+    <div class="super-select-left-arrow"></div>
+    <div class="super-select-long-label">Select your </div>
+  </div> <label aria-hidden="true" class="super-select-input"><span class="label"></span> <input type="text" placeholder="Select an Item..." aria-role="listbox" aria-haspopup="true" aria-autocomplete="list" spellcheck="false" aria-owns="super-super-select-dropdown-1" autocomplete="nope">
+    <!----></label>
+  <div id="super-super-select-dropdown-1" class="super-select-dropdown">
+    <scroller-stub size="40" remain="18" rtag="div" wtag="div" wclass="" start="0" offset="0" bench="0" debounce="0" itemcount="0" itemprops="function _default() {}">
+      <div aria-role="option" class="super-select-item active">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 0</span></div>
+        <div class="super-select-val">MA==</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 1</span></div>
+        <div class="super-select-val">MQ==</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 2</span></div>
+        <div class="super-select-val">Mg==</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 3</span></div>
+        <div class="super-select-val">Mw==</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 4</span></div>
+        <div class="super-select-val">NA==</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 5</span></div>
+        <div class="super-select-val">NQ==</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 6</span></div>
+        <div class="super-select-val">Ng==</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 7</span></div>
+        <div class="super-select-val">Nw==</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 8</span></div>
+        <div class="super-select-val">OA==</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 9</span></div>
+        <div class="super-select-val">OQ==</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 10</span></div>
+        <div class="super-select-val">MTA=</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 11</span></div>
+        <div class="super-select-val">MTE=</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 12</span></div>
+        <div class="super-select-val">MTI=</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 13</span></div>
+        <div class="super-select-val">MTM=</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 14</span></div>
+        <div class="super-select-val">MTQ=</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 15</span></div>
+        <div class="super-select-val">MTU=</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 16</span></div>
+        <div class="super-select-val">MTY=</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 17</span></div>
+        <div class="super-select-val">MTc=</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 18</span></div>
+        <div class="super-select-val">MTg=</div>
+      </div>
+      <div aria-role="option" class="super-select-item">
+        <div class="super-select-text">
+          <!---->
+          <!----> <span>Item 19</span></div>
+        <div class="super-select-val">MTk=</div>
+      </div>
+    </scroller-stub>
+    <!---->
   </div>
-  <div class="val">MA==</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 1</span></div>
-    <div class="val">MQ==</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 2</span></div>
-    <div class="val">Mg==</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 3</span></div>
-    <div class="val">Mw==</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 4</span></div>
-    <div class="val">NA==</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 5</span></div>
-    <div class="val">NQ==</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 6</span></div>
-    <div class="val">Ng==</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 7</span></div>
-    <div class="val">Nw==</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 8</span></div>
-    <div class="val">OA==</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 9</span></div>
-    <div class="val">OQ==</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 10</span></div>
-    <div class="val">MTA=</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 11</span></div>
-    <div class="val">MTE=</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 12</span></div>
-    <div class="val">MTI=</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 13</span></div>
-    <div class="val">MTM=</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 14</span></div>
-    <div class="val">MTQ=</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 15</span></div>
-    <div class="val">MTU=</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 16</span></div>
-    <div class="val">MTY=</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 17</span></div>
-    <div class="val">MTc=</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 18</span></div>
-    <div class="val">MTg=</div>
-  </li>
-  <li aria-role="option" class="item">
-    <div class="text">
-      <!---->
-      <!----> <span>Item 19</span></div>
-    <div class="val">MTk=</div>
-  </li></span></scroller-stub>
-  <!---->
-</div>
-<div style="display: none;"></div>
-<div aria-live="polite" aria-relevant="additions" class="assistive-text"></div>
+  <div style="display: none;"></div>
+  <div aria-live="polite" aria-relevant="additions" class="super-select-assistive-text"></div>
 </div>
 `;
