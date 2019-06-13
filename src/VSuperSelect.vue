@@ -1,15 +1,22 @@
 <template>
   <div
-    class="select-container"
-    :class="{'dropdown-visible': dropdownVisible, 'disabled': disabled}"
+    class="super-select-container"
+    :disabled="disabled"
+    :class="{'super-select-dropdown-visible': dropdownVisible, 'super-select-native': nativeMobile}"
     :style="{
       '--boxHeight': inputHeight,
       '--boxWidth': inputWidth,
       '--dropDownMaxHeight': dropdownMaxHeightCalc,
       '--itemHeight': itemHeight + 'px',
+      '--mobileHeaderBackgroundColor': mobileHeaderBackgroundColor,
+      '--mobileHeaderBorderBottom': mobileHeaderBorderBottom,
     }"
   >
-    <label ref="field" class="select-input" aria-hidden="true" @click="showDropdown">
+    <div class="super-select-mobile-header">
+      <div class="super-select-left-arrow" @click="hideDropdown"></div>
+      <div class="super-select-long-label">Select your {{longLabel || label}}</div>
+    </div>
+    <label ref="field" class="super-select-input" aria-hidden="true">
       <!-- Optional slot to format label -->
       <slot name="label" :label="label">
         <span class="label" :label="label">{{label}}</span>
@@ -19,9 +26,6 @@
         ref="input"
         @focus="showDropdown"
         @blur="hideDropdown"
-        @keydown.stop="$_keyTextBox"
-        @keypress.stop="$_keyTextBox"
-        @keyup.stop="$_keyTextBox"
         :placeholder="placeholder"
         v-model.lazy="inputText"
         v-debounce="debounceTime"
@@ -29,49 +33,70 @@
         aria-haspopup="true"
         aria-autocomplete="list"
         :spellcheck="spellcheck ? 'true' : 'false'"
-        :aria-owns="'super-select-dropdown-' + uid"
+        :aria-owns="'super-super-select-dropdown-' + uid"
         :aria-label="label"
         :name="name"
         :autocomplete="autocomplete"
         :disabled="disabled"
+        @keydown.stop="$_keyTextBox"
+        @keypress.stop="$_keyTextBox"
+        @keyup.stop="$_keyTextBox"
       >
+      <select
+        v-if="nativeMobile"
+        :class="{'super-select-placeholder': selectedIndex === null}"
+        @input="selectValue($event.target.value), clearFilter()"
+      >
+        <option value disabled selected>{{placeholder}}</option>
+        <option
+          v-for="item in ungroupedItems"
+          :value="item[valueField]"
+          :key="item[valueField]"
+        >{{item[textField]}}</option>
+      </select>
     </label>
     <div
-      class="select-dropdown"
-      :id="'super-select-dropdown-' + uid"
+      class="super-select-dropdown"
+      :id="'super-super-select-dropdown-' + uid"
       :class="{above: dropdownAbove}"
       ref="dropdown"
     >
       <scroller :size="itemHeight" :remain="remainCount">
-        <transition-group name="list" tag="ul">
-          <li
-            v-for="item in flattenedItems"
-            :key="item.$id"
-            :class="{ item: item.$isItem, group: item.$isGroup, active: item === activeItem }"
-            @click="item.$isItem && selectItem(item)"
-            :aria-role="item.$isItem ? 'option' : false"
-          >
-            <slot v-if="item.$isGroup" name="group" :group="item">
-              <div class="group-name">{{ item[groupNameField] }}</div>
-            </slot>
-            <slot v-else-if="item.$isItem" name="item" :item="item">
-              <div class="text">
-                <i v-if="item[iconClassField]" class="icon" :class="item[iconClassField]"/>
-                <img v-if="item[iconUrlField]" :src="item[iconUrlField]" class="icon-img">
-                <span v-html="item.$html"></span>
-              </div>
-              <div
-                class="val"
-                :class="{ bold: item && item[valueField] && item[valueField].toLowerCase() === filterText.toLowerCase() }"
-              >{{ !showValue ? '' : item[valueField] }}</div>
-            </slot>
-          </li>
-        </transition-group>
+        <div
+          v-for="item in flattenedItems"
+          :key="item.$id"
+          :class="{ 'super-select-item': item.$isItem, 'super-select-group': item.$isGroup, active: item === activeItem }"
+          @click="item.$isItem && selectItem(item)"
+          :aria-role="item.$isItem ? 'option' : false"
+        >
+          <slot v-if="item.$isGroup" name="group" :group="item">
+            <div class="super-select-group-name">{{ item[groupNameField] }}</div>
+          </slot>
+          <slot v-else-if="item.$isItem" name="item" :item="item">
+            <div class="super-select-text">
+              <i
+                v-if="item[iconClassField]"
+                class="super-select-icon"
+                :class="item[iconClassField]"
+              />
+              <img
+                v-if="item[iconUrlField]"
+                :src="item[iconUrlField]"
+                class="super-select-icon-img"
+              >
+              <span v-html="item.$html"></span>
+            </div>
+            <div
+              class="super-select-val"
+              :class="{ 'super-select-em': item && item[valueField] && item[valueField].toLowerCase() === filterText.toLowerCase() }"
+            >{{ !showValue ? '' : item[valueField] }}</div>
+          </slot>
+        </div>
       </scroller>
       <slot v-if="ungroupedItems.length === 0" name="none-found" :text="noneFoundText">
-        <div class="item">
-          <div class="text">{{ noneFoundText }}</div>
-          <div class="val"></div>
+        <div class="super-select-item">
+          <div class="super-select-text">{{ noneFoundText }}</div>
+          <div class="super-select-val"></div>
         </div>
       </slot>
     </div>
@@ -79,7 +104,7 @@
       <!-- Optional slot to add items the 'old' way with option tags, ex: <option value="1">Item 1</option>-->
       <slot></slot>
     </div>
-    <div class="assistive-text" aria-live="polite" aria-relevant="additions">
+    <div class="super-select-assistive-text" aria-live="polite" aria-relevant="additions">
       <div v-for="(text, index) in textToRead" :key="index">{{text}}</div>
     </div>
   </div>
@@ -95,6 +120,8 @@ export default Vue.extend({
   props: {
     // The label of the dropdown field.
     label: String,
+    // The full unabbreviated label of the dropdown field.
+    longLabel: String,
     // The label of the text input.
     name: String,
     // For v-model binding to selected value.
@@ -103,7 +130,7 @@ export default Vue.extend({
     },
     // Data items to display in the drop down.
     items: Array,
-    // Field is disabled
+    // Field is disabled.
     disabled: {
       type: Boolean,
       default: false,
@@ -158,26 +185,26 @@ export default Vue.extend({
       type: String,
       default: 'No Results Found',
     },
-    // Css height of the textbox container
+    // Css height of the textbox container.
     inputHeight: {
       type: String,
       default: '52px',
     },
-    // Css width of the textbox container
+    // Css width of the textbox container.
     inputWidth: {
       type: String,
       default: '185px',
     },
-    // Height in pixels of each individual item
+    // Height in pixels of each individual item.
     itemHeight: {
       type: Number,
       default: 40,
     },
-    // Css max height of dropdown
+    // Css max height of dropdown.
     dropDownMaxHeight: {
       type: [Number, String],
     },
-    // Amount of time to wait after user input before filtering is performed
+    // Amount of time to wait after user input before filtering is performed.
     debounceTime: {
       type: Number,
       default: 250,
@@ -189,6 +216,21 @@ export default Vue.extend({
     },
     // Allows enabling browser spellcheck on input field.
     spellcheck: Boolean,
+    // Background color for full-style mobile header.
+    mobileHeaderBackgroundColor: {
+      type: String,
+      default: '#2e3a30',
+    },
+    // Bottom border color styling for full-style mobile header.
+    mobileHeaderBorderBottom: {
+      type: String,
+      default: 'linear-gradient(to right, #2e3a30, #ccc)',
+    },
+    // If true, mobile devices will use native select.
+    nativeMobile: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -218,10 +260,14 @@ export default Vue.extend({
       this.activeIndex = item ? this.ungroupedItems.indexOf(item) : null
       this.selectedIndex = item ? item.$index : null
 
-      this.readText(!item ? 'Selection cleared' : 'Selected item')
+      this.$_readText(!item ? 'Selection cleared' : 'Selected item')
       this.$emit('input', this.valueIsString ? item[this.valueField] : item)
       this.$emit('change', this.valueIsString ? item[this.valueField] : item)
       this.$emit('selectedIndexChanged', this.selectedIndex)
+    },
+    selectValue(value: any): void {
+      const item = this.ungroupedItems.find(i => i[this.valueField] === value)
+      this.selectItem(item)
     },
     // Clears the drop down selection.
     clearSelection(): void {
@@ -238,7 +284,7 @@ export default Vue.extend({
         if (!this.inputText && this.prevText) {
           this.inputText = this.prevText
         }
-        this.readText(this.label + ' collapsed')
+        this.$_readText(this.label + ' collapsed')
         this.$emit('closed')
       }, 200)
     },
@@ -247,15 +293,17 @@ export default Vue.extend({
       if (this.disabled) {
         return
       }
-      this.inputText = ''
+      this.clearFilter()
       this.dropdownVisible = true
       this.dropdownMaxHeightCalc =
         this.dropDownMaxHeight || this.$_getDropdownMaxHeight() + 'px'
       this.$_debounceAssistiveText(this.label + ' expanded ' + this.ariaText)
-
       this.$emit('opened')
     },
-    readText(text: string): void {
+    clearFilter(): void {
+      this.inputText = ''
+    },
+    $_readText(text: string): void {
       this.textToRead.push(text)
     },
     $_getDropdownMaxHeight(): number {
@@ -398,7 +446,10 @@ export default Vue.extend({
     },
     $_highlightTextString(val: string): string {
       if (this.filterText) {
-        return val.replace(this.highlightRegexp, '<span class="bold">$1</span>')
+        return val.replace(
+          this.highlightRegexp,
+          '<span class="super-select-em">$1</span>',
+        )
       }
       return val
     },
@@ -551,7 +602,7 @@ export default Vue.extend({
   },
   mounted() {
     this.$_debounceAssistiveText = debounce.debounce(
-      (text: string) => this.readText(text),
+      (text: string) => this.$_readText(text),
       this.debounceTime,
     )
     this.isMounted = true
@@ -566,7 +617,15 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
-.select-container {
+* {
+  box-sizing: border-box;
+}
+
+.super-select-em {
+  font-weight: 600;
+}
+
+.super-select-container {
   position: relative;
   color: #60635a;
   font-size: 11px;
@@ -575,177 +634,25 @@ export default Vue.extend({
   font-weight: 400;
   height: var(--boxHeight, 52px);
 
-  * {
-    box-sizing: border-box;
-  }
-
-  .select-input {
-    border: 1px solid #aeb0ab;
-    background-color: #fff;
-    height: var(--boxHeight, 52px);
-    width: var(--boxWidth, 185px);
-    cursor: pointer;
-    padding: 9px 14px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    text-transform: uppercase;
-
-    input {
-      border: 0;
-      width: 100%;
-      font-size: 16px;
-      line-height: 22px;
-      cursor: pointer;
-      outline: none;
-      color: #60635a;
-      overflow: hidden;
-      text-overflow: ellipsis;
-
-      &::placeholder {
-        color: #aeb0ab;
-        opacity: 1;
-      }
-    }
-  }
-
-  .select-dropdown {
-    display: none;
-    z-index: 0;
-    position: absolute;
-    margin: 4px 0;
-    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 0 0 2px 2px;
-    border: 1px solid #aeb0ab;
-    width: 369px;
-    background-color: #fff;
-    font-size: 14px;
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    padding: 8px 3px 4px 0;
-    max-height: var(--dropDownMaxHeight, 300px);
-    overflow-x: hidden;
-
-    & > *::v-deep {
-      &::-webkit-scrollbar-track {
-        background-color: #fff;
-      }
-
-      &::-webkit-scrollbar {
-        width: 6px;
-        border-radius: 50%;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        border-radius: 3px;
-        background-color: #afb1ac;
-      }
-    }
-
-    ul {
-      padding: 0;
-      margin: 0;
-      overflow-x: hidden;
-
-      .group {
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-start;
-        color: #2e3a30;
-        position: sticky;
-        top: -1px;
-        background-color: #fff;
-        width: 100%;
-
-        .group-name {
-          height: var(--itemHeight, 40px);
-          display: flex;
-          align-items: center;
-          font-weight: 600;
-          border-bottom: 1px solid #aeb0ab;
-          font-size: 14px;
-          margin-left: 17px;
-          margin-right: 5px;
-        }
-      }
-
-      .item {
-        height: var(--itemHeight, 40px);
-        color: #2e3a30;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-left: 17px;
-        cursor: pointer;
-
-        &:hover,
-        &:active,
-        &.active {
-          background-color: #e9e9e4;
-        }
-
-        .text {
-          display: flex;
-          align-items: center;
-
-          .icon,
-          .icon-img {
-            margin-right: 10px;
-          }
-        }
-
-        .val {
-          color: #60635a;
-          text-transform: uppercase;
-          font-size: 12px;
-          letter-spacing: 0.1px;
-          margin-right: 6px;
-        }
-
-        ::v-deep .bold {
-          font-weight: 600;
-        }
-      }
-    }
-
-    &.above {
-      margin-top: 0;
-      bottom: calc(24px + var(--boxHeight, 300px));
-    }
-  }
-
-  .assistive-text {
-    position: absolute;
-    margin: -1px;
-    border: 0;
-    padding: 0;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-  }
-
-  &.dropdown-visible {
+  &.super-select-dropdown-visible {
     z-index: 1;
 
-    .select-input {
+    .super-select-input {
       box-shadow: 0 0 2px #007099;
       border-radius: 2px 0 0 2px;
       border: 1px solid #007099;
 
-      .input {
+      input {
         color: #2e3a30;
       }
     }
 
-    .select-dropdown {
+    .super-select-dropdown {
       display: flex;
     }
   }
 
-  &.disabled {
+  &[disabled] {
     cursor: default;
     color: #888;
     background-color: #eee;
@@ -757,17 +664,270 @@ export default Vue.extend({
       background-color: #eee;
     }
   }
+}
 
-  .list-item {
-    display: inline-block;
+.super-select-input {
+  border: 1px solid #aeb0ab;
+  background-color: #fff;
+  height: var(--boxHeight, 52px);
+  width: var(--boxWidth, 185px);
+  cursor: pointer;
+  padding: 9px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  text-transform: uppercase;
+
+  input,
+  select {
+    border: 0;
+    width: 100%;
+    font-size: 16px;
+    line-height: 22px;
+    cursor: pointer;
+    outline: none;
+    color: #60635a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &::placeholder,
+    &.super-select-placeholder:not(:focus) {
+      color: #aeb0ab;
+      opacity: 1;
+    }
   }
-  .list-enter-active,
-  .list-leave-active {
+
+  select {
+    display: none;
+  }
+}
+
+.super-select-mobile-input {
+  display: none;
+}
+
+.super-select-dropdown {
+  display: none;
+  z-index: 0;
+  position: absolute;
+  margin: 4px 0;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 0 0 2px 2px;
+  border: 1px solid #aeb0ab;
+  width: 369px;
+  background-color: #fff;
+  font-size: 14px;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 8px 3px 4px 0;
+  max-height: var(--dropDownMaxHeight, 300px);
+  overflow-x: hidden;
+
+  & > *::v-deep {
+    &::-webkit-scrollbar-track {
+      background-color: #fff;
+    }
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      border-radius: 50%;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 3px;
+      background-color: #afb1ac;
+    }
+  }
+
+  &.above {
+    margin-top: 0;
+    bottom: calc(24px + var(--boxHeight, 300px));
+  }
+}
+
+.super-select-item {
+  height: var(--itemHeight, 40px);
+  color: #2e3a30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 17px;
+  cursor: pointer;
+
+  &:hover,
+  &:active,
+  &.active {
+    background-color: #e9e9e4;
+  }
+}
+
+.super-select-text {
+  display: flex;
+  align-items: center;
+}
+
+.super-select-icon,
+.super-select-icon-img {
+  margin-right: 10px;
+}
+
+.super-select-val {
+  color: #60635a;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.1px;
+  margin-right: 6px;
+}
+
+.super-select-group {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  color: #2e3a30;
+  position: sticky;
+  top: -1px;
+  background-color: #fff;
+  width: 100%;
+}
+
+.super-select-group-name {
+  height: var(--itemHeight, 40px);
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  border-bottom: 1px solid #aeb0ab;
+  font-size: 14px;
+  margin-left: 17px;
+  margin-right: 5px;
+}
+
+.super-select-assistive-text {
+  position: absolute;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.super-select-mobile-header {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .super-select-container {
     transition: all 0.3s;
+
+    &.super-select-dropdown-visible {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: var(--mobileHeaderBackgroundColor, #2e3a30);
+      color: #fff;
+      font-size: 17px;
+      z-index: 10;
+
+      .super-select-mobile-header {
+        display: flex;
+      }
+
+      .super-select-input {
+        width: 100%;
+        border: 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+        padding: 15px;
+        background-color: transparent;
+        height: 70px;
+        position: relative;
+
+        &::after {
+          content: '';
+          position: absolute;
+          z-index: 1;
+          bottom: -6px;
+          left: 0;
+          height: 6px;
+          width: 100%;
+          background: var(--mobileHeaderBorderBottom, #ccc);
+        }
+
+        .label {
+          display: none;
+        }
+
+        input {
+          height: 40px;
+          border: 1px solid #e9e9e4;
+          background-color: #f9f9f9;
+          border-radius: 3px;
+          padding-left: 12px;
+
+          &:focus {
+            box-shadow: 0 0 2px rgba(0, 172, 236, 0.45);
+            border: 1px solid #007099;
+          }
+
+          &::placeholder {
+            font-size: 13px;
+            letter-spacing: 0.05px;
+          }
+        }
+      }
+    }
+
+    &.super-select-native {
+      .super-select-input {
+        input {
+          display: none;
+        }
+        select {
+          display: block;
+          margin-left: -3px;
+          box-shadow: inset 0 100px 0 0 white;
+        }
+      }
+    }
   }
-  .list-enter, .list-leave-to /* .list-leave-active below version 2.1.8 */ {
-    opacity: 0;
-    transform: translateX(30px);
+
+  .super-select-dropdown,
+  .super-select-dropdown.above {
+    box-shadow: none;
+    border: 0;
+    width: 100vw;
+    top: 140px;
+    bottom: -5px;
+    max-height: 100vh;
+
+    & > * {
+      height: 100% !important;
+    }
+  }
+
+  .super-select-mobile-header {
+    align-items: flex-start;
+    justify-content: flex-start;
+    height: 51px;
+    padding-top: 12px;
+    margin: 15px;
+    margin-bottom: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .super-select-left-arrow {
+    background-color: transparent;
+    background: url(./assets/left-arrow.png) no-repeat;
+    background-size: cover;
+    cursor: pointer;
+    width: 22px;
+    height: 15px;
+    margin-left: 5px;
+    margin-right: 54px;
   }
 }
 </style>

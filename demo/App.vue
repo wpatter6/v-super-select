@@ -8,16 +8,36 @@
         <option value="2">Second Option</option>
       </v-super-select>
       <h3>Using Default Slot with Select-Style options:</h3>
-      <v-super-select label="options">
+      <v-super-select
+        native-mobile
+        label="options"
+        mobile-header-background-color="#006643"
+        mobile-header-border-bottom="linear-gradient(to right, #006643 0%, #00a8e3 94%, #00acec 100%)"
+      >
         <option value="1">First Option</option>
         <option value="2">Second Option</option>
       </v-super-select>
       <h3>Using Items from Data:</h3>
-      <v-super-select label="data" :items="flatItems"></v-super-select>
+      <v-super-select
+        label="data"
+        :items="flatItems"
+        mobile-header-background-color="#006643"
+        mobile-header-border-bottom="linear-gradient(to right, #006643 0%, #00a8e3 94%, #00acec 100%)"
+      ></v-super-select>
       <h3>Using Grouped Items from Data:</h3>
-      <v-super-select label="group data" :items="groupedItems"></v-super-select>
+      <v-super-select
+        label="group data"
+        :items="groupedItems"
+        mobile-header-background-color="#006643"
+        mobile-header-border-bottom="linear-gradient(to right, #006643 0%, #00a8e3 94%, #00acec 100%)"
+      ></v-super-select>
       <h3>2000 Grouped Items Virtual Scrolling:</h3>
-      <v-super-select label="virtual scrolling" :items="virtualScrollItems"></v-super-select>
+      <v-super-select
+        label="virtual scrolling"
+        :items="virtualScrollItems"
+        mobile-header-background-color="#006643"
+        mobile-header-border-bottom="linear-gradient(to right, #006643 0%, #00a8e3 94%, #00acec 100%)"
+      ></v-super-select>
       <h3>Using Irregular Data</h3>
       <v-super-select
         label="irregular data"
@@ -27,6 +47,8 @@
         group-name-field="headerText"
         children-field="children"
         v-model="irregularValue"
+        mobile-header-background-color="#006643"
+        mobile-header-border-bottom="linear-gradient(to right, #006643 0%, #00a8e3 94%, #00acec 100%)"
       ></v-super-select>
       <div>{{ JSON.stringify(irregularValue) }}</div>
     </section>
