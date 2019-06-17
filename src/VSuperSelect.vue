@@ -633,6 +633,8 @@ export default Vue.extend({
   letter-spacing: 0.09px;
   font-weight: 400;
   height: var(--boxHeight, 52px);
+  display: flex;
+  max-width: 185px;
 
   &.super-select-dropdown-visible {
     z-index: 1;
@@ -670,7 +672,7 @@ export default Vue.extend({
   border: 1px solid #aeb0ab;
   background-color: #fff;
   height: var(--boxHeight, 52px);
-  width: var(--boxWidth, 185px);
+  flex-basis: var(--boxWidth, 185px);
   cursor: pointer;
   padding: 9px 14px;
   display: flex;
