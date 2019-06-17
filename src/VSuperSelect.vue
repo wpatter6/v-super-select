@@ -300,6 +300,12 @@ export default Vue.extend({
       this.$_debounceAssistiveText(this.label + ' expanded ' + this.ariaText)
       this.$emit('opened')
     },
+    focus(): void {
+      (this.$refs.input as HTMLInputElement).focus()
+    },
+    blur(): void {
+      (this.$refs.input as HTMLInputElement).blur()
+    },
     clearFilter(): void {
       this.inputText = ''
     },
