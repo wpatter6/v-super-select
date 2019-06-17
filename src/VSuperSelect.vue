@@ -834,6 +834,8 @@ export default Vue.extend({
       color: #fff;
       font-size: 17px;
       z-index: 10;
+      max-width: 100vw;
+      flex-direction: column;
 
       .super-select-mobile-header {
         display: flex;
@@ -845,7 +847,8 @@ export default Vue.extend({
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
         padding: 15px;
         background-color: transparent;
-        height: 70px;
+        height: 72px;
+        max-height: 72px;
         position: relative;
 
         &::after {
