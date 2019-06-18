@@ -301,10 +301,10 @@ export default Vue.extend({
       this.$emit('opened')
     },
     focus(): void {
-      (this.$refs.input as HTMLInputElement).focus()
+      ;(this.$refs.input as HTMLInputElement).focus()
     },
     blur(): void {
-      (this.$refs.input as HTMLInputElement).blur()
+      ;(this.$refs.input as HTMLInputElement).blur()
     },
     clearFilter(): void {
       this.inputText = ''
@@ -732,6 +732,7 @@ export default Vue.extend({
   padding: 8px 3px 4px 0;
   max-height: var(--dropDownMaxHeight, 300px);
   overflow-x: hidden;
+  top: var(--boxHeight, 52px);
 
   & > *::v-deep {
     &::-webkit-scrollbar-track {
@@ -750,8 +751,9 @@ export default Vue.extend({
   }
 
   &.above {
+    top: initial;
     margin-top: 0;
-    bottom: calc(24px + var(--boxHeight, 300px));
+    bottom: var(--boxHeight, 52px);
   }
 }
 
