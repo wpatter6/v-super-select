@@ -301,10 +301,10 @@ export default Vue.extend({
       this.$emit('opened')
     },
     focus(): void {
-      ;(this.$refs.input as HTMLInputElement).focus()
+      (this.$refs.input as HTMLInputElement).focus()
     },
     blur(): void {
-      ;(this.$refs.input as HTMLInputElement).blur()
+      (this.$refs.input as HTMLInputElement).blur()
     },
     clearFilter(): void {
       this.inputText = ''
