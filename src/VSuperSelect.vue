@@ -640,7 +640,7 @@ export default Vue.extend({
   font-weight: 400;
   height: var(--boxHeight, 52px);
   display: flex;
-  max-width: 185px;
+  max-width: var(--boxWidth, 185px);
 
   &.super-select-dropdown-visible {
     z-index: 1;
