@@ -612,10 +612,10 @@ export default Vue.extend({
   },
   watch: {
     loading(val) {
-      if(!val && this.$refs.input === document.activeElement) {
-        this.showDropdown();
+      if (!val && this.$refs.input === document.activeElement) {
+        this.showDropdown()
       }
-    }
+    },
   },
   mounted() {
     this.$_debounceAssistiveText = debounce.debounce(
