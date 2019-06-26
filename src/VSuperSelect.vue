@@ -858,7 +858,7 @@ export default Vue.extend({
     border-radius: 50%;
     border: 1px solid #60635a;
     border-color: #60635a transparent #60635a transparent;
-    animation: super-select-spin-data-v-182a940c 1.2s linear infinite;
+    animation: super-select-spin 1.2s linear infinite;
   }
 }
 
