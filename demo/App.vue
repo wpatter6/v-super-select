@@ -51,6 +51,17 @@
         mobile-header-border-bottom="linear-gradient(to right, #006643 0%, #00a8e3 94%, #00acec 100%)"
       ></v-super-select>
       <div>{{ JSON.stringify(irregularValue) }}</div>
+      <h3>With Loading Spinner</h3>
+      <v-super-select
+        label="loading example"
+        :loading="loading"
+        :items="flatItems"
+        mobile-header-background-color="#006643"
+        mobile-header-border-bottom="linear-gradient(to right, #006643 0%, #00a8e3 94%, #00acec 100%)"
+      ></v-super-select>
+      <div>
+        <button @click="loading = !loading">Toggle Loading</button>
+      </div>
     </section>
   </div>
 </template>
@@ -63,6 +74,7 @@ export default Vue.extend({
   name: 'app',
   data() {
     return {
+      loading: true,
       flatItems: [
         {
           text: 'Denver, CO',

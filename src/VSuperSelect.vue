@@ -54,6 +54,7 @@
           :key="item[valueField]"
         >{{item[textField]}}</option>
       </select>
+      <div class="super-select-spinner" v-if="loading"></div>
     </label>
     <div
       class="super-select-dropdown"
@@ -128,6 +129,8 @@ export default Vue.extend({
     value: {
       type: [String, Object],
     },
+    // Show loading spinner when true.
+    loading: Boolean,
     // Data items to display in the drop down.
     items: Array,
     // Field is disabled.
@@ -290,7 +293,8 @@ export default Vue.extend({
     },
     // Used to show the dropdown
     showDropdown(): void {
-      if (this.disabled) {
+      if (this.disabled || this.loading) {
+        (this.$refs.input as HTMLInputElement).blur()
         return
       }
       this.clearFilter()
@@ -686,6 +690,7 @@ export default Vue.extend({
   justify-content: space-between;
   align-items: flex-start;
   text-transform: uppercase;
+  user-select: none;
 
   input,
   select {
@@ -698,6 +703,7 @@ export default Vue.extend({
     color: #60635a;
     overflow: hidden;
     text-overflow: ellipsis;
+    user-select: auto;
 
     &::placeholder,
     &.super-select-placeholder:not(:focus) {
@@ -828,6 +834,27 @@ export default Vue.extend({
   display: none;
 }
 
+.super-select-spinner {
+  position: absolute;
+  right: 6px;
+  top: calc(var(--boxHeight, 52px) - 38px);
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+
+  &:after {
+    content: " ";
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin: 1px;
+    border-radius: 50%;
+    border: 1px solid #60635a;
+    border-color: #60635a transparent #60635a transparent;
+    animation: super-select-spin-data-v-182a940c 1.2s linear infinite;
+  }
+}
+
 @media (max-width: 480px) {
   .super-select-container {
     transition: all 0.3s;
@@ -941,6 +968,15 @@ export default Vue.extend({
     height: 15px;
     margin-left: 5px;
     margin-right: 54px;
+  }
+}
+
+@keyframes super-select-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>

@@ -6,6 +6,7 @@ exports[`VSuperSelect.vue will match snapshot 1`] = `
     <div class="super-select-left-arrow"></div>
     <div class="super-select-long-label">Select your </div>
   </div> <label aria-hidden="true" class="super-select-input"><span class="label"></span> <input type="text" placeholder="Select an Item..." aria-role="listbox" aria-haspopup="true" aria-autocomplete="list" spellcheck="false" aria-owns="super-super-select-dropdown-0" autocomplete="nope">
+    <!---->
     <!----></label>
   <div id="super-super-select-dropdown-0" class="super-select-dropdown">
     <scroller-stub size="40" remain="3" rtag="div" wtag="div" wclass="" start="0" offset="0" bench="0" debounce="0" itemcount="0" itemprops="function _default() {}">
@@ -41,6 +42,7 @@ exports[`VSuperSelect.vue will match snapshot 2: 2 1`] = `
     <div class="super-select-left-arrow"></div>
     <div class="super-select-long-label">Select your </div>
   </div> <label aria-hidden="true" class="super-select-input"><span class="label"></span> <input type="text" placeholder="Select an Item..." aria-role="listbox" aria-haspopup="true" aria-autocomplete="list" spellcheck="false" aria-owns="super-super-select-dropdown-1" autocomplete="nope">
+    <!---->
     <!----></label>
   <div id="super-super-select-dropdown-1" class="super-select-dropdown">
     <scroller-stub size="40" remain="18" rtag="div" wtag="div" wclass="" start="0" offset="0" bench="0" debounce="0" itemcount="0" itemprops="function _default() {}">
