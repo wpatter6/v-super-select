@@ -34,10 +34,11 @@
         aria-autocomplete="list"
         :spellcheck="spellcheck ? 'true' : 'false'"
         :aria-owns="'super-super-select-dropdown-' + uid"
-        :aria-label="label"
+        :aria-label="label + loading ? ' loading' : ''"
         :name="name"
         :autocomplete="autocomplete"
         :disabled="disabled"
+        :tabindex="!disabled ? 0 : -1"
         @keydown.stop="$_keyTextBox"
         @keypress.stop="$_keyTextBox"
         @keyup.stop="$_keyTextBox"
@@ -294,7 +295,6 @@ export default Vue.extend({
     // Used to show the dropdown
     showDropdown(): void {
       if (this.disabled || this.loading) {
-        (this.$refs.input as HTMLInputElement).blur()
         return
       }
       this.clearFilter()
@@ -609,6 +609,13 @@ export default Vue.extend({
     valueIsString(): boolean {
       return typeof this.value === 'string'
     },
+  },
+  watch: {
+    loading(val) {
+      if(!val && this.$refs.input === document.activeElement) {
+        this.showDropdown();
+      }
+    }
   },
   mounted() {
     this.$_debounceAssistiveText = debounce.debounce(

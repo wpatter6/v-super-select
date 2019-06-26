@@ -1,6 +1,6 @@
 {
   "name": "v-super-select",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "private": false,
   "main": "dist/v-super-select.common.js",
   "module": "dist/v-super-select.common.js",
