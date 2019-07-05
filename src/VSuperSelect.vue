@@ -42,7 +42,7 @@
         @keydown.stop="$_keyTextBox"
         @keypress.stop="$_keyTextBox"
         @keyup.stop="$_keyTextBox"
-      >
+      />
       <select
         v-if="nativeMobile"
         :class="{'super-select-placeholder': selectedIndex === null}"
@@ -85,7 +85,7 @@
                 v-if="item[iconUrlField]"
                 :src="item[iconUrlField]"
                 class="super-select-icon-img"
-              >
+              />
               <span v-html="item.$html"></span>
             </div>
             <div
@@ -618,6 +618,7 @@ export default Vue.extend({
     },
   },
   mounted() {
+    window.addEventListener('blur', () => this.blur())
     this.$_debounceAssistiveText = debounce.debounce(
       (text: string) => this.$_readText(text),
       this.debounceTime,
@@ -850,7 +851,7 @@ export default Vue.extend({
   height: 30px;
 
   &:after {
-    content: " ";
+    content: ' ';
     display: block;
     width: 20px;
     height: 20px;
