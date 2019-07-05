@@ -844,7 +844,7 @@ export default Vue.extend({
 .super-select-spinner {
   position: absolute;
   right: 6px;
-  top: calc(var(--boxHeight, 52px) - 38px);
+  top: calc(var(--boxHeight, 52px) - 35px);
   display: inline-block;
   width: 30px;
   height: 30px;
