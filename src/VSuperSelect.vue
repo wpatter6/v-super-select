@@ -253,12 +253,14 @@ export default Vue.extend({
   },
   methods: {
     // Used to select an item.
-    selectItem(item: any): void {
+    selectItem(item: any, focus = true): void {
       if (this.disabled) {
         return
       }
 
-      const f = (this.$refs.input as HTMLElement).focus()
+      if (focus) {
+        const f = (this.$refs.input as HTMLElement).focus()
+      }
       const val = item ? item[this.valueField] : null
       this.prevText = this.inputText = item ? item[this.textField] : null
       this.activeIndex = item ? this.ungroupedItems.indexOf(item) : null
@@ -269,9 +271,9 @@ export default Vue.extend({
       this.$emit('change', this.valueIsString ? item[this.valueField] : item)
       this.$emit('selectedIndexChanged', this.selectedIndex)
     },
-    selectValue(value: any): void {
+    selectValue(value: any, focus = true): void {
       const item = this.ungroupedItems.find(i => i[this.valueField] === value)
-      this.selectItem(item)
+      this.selectItem(item, focus)
     },
     // Clears the drop down selection.
     clearSelection(): void {
@@ -305,10 +307,10 @@ export default Vue.extend({
       this.$emit('opened')
     },
     focus(): void {
-      (this.$refs.input as HTMLInputElement).focus()
+      this.$refs.input && (this.$refs.input as HTMLInputElement).focus()
     },
     blur(): void {
-      (this.$refs.input as HTMLInputElement).blur()
+      this.$refs.input && (this.$refs.input as HTMLInputElement).blur()
     },
     clearFilter(): void {
       this.inputText = ''
@@ -623,6 +625,13 @@ export default Vue.extend({
       (text: string) => this.$_readText(text),
       this.debounceTime,
     )
+    if (this.value) {
+      if (typeof(this.value) === 'string' || typeof(this.value) === 'number') {
+        this.selectValue(this.value, false)
+      } else if (this.value[this.valueField]) {
+        this.selectItem(this.value, false)
+      }
+    }
     this.isMounted = true
   },
   components: {

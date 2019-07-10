@@ -35,6 +35,7 @@
       <v-super-select
         label="virtual scrolling"
         :items="virtualScrollItems"
+        v-model="selectedVScrollItem"
         mobile-header-background-color="#006643"
         mobile-header-border-bottom="linear-gradient(to right, #006643 0%, #00a8e3 94%, #00acec 100%)"
       ></v-super-select>
@@ -115,6 +116,7 @@ export default Vue.extend({
           ],
         },
       ],
+      selectedVScrollItem: 'g2i2',
       virtualScrollItems: Array(100)
         .join()
         .split(',')
