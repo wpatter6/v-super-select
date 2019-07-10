@@ -249,6 +249,7 @@ export default Vue.extend({
       isMounted: false,
       textToRead: [] as string[],
       uid: uid++,
+      needsSelection: false,
     }
   },
   methods: {
@@ -274,6 +275,17 @@ export default Vue.extend({
     selectValue(value: any, focus = true): void {
       const item = this.ungroupedItems.find(i => i[this.valueField] === value)
       this.selectItem(item, focus)
+    },
+    selectModel() {
+      if (this.value) {
+        if (typeof this.value === 'string' || typeof this.value === 'number') {
+          this.selectValue(this.value, false)
+          this.needsSelection = this.selectedIndex === null
+        } else if (this.value[this.valueField]) {
+          this.selectItem(this.value, false)
+          this.needsSelection = this.selectedIndex === null
+        }
+      }
     },
     // Clears the drop down selection.
     clearSelection(): void {
@@ -618,6 +630,11 @@ export default Vue.extend({
         this.showDropdown()
       }
     },
+    ungroupedItems(val) {
+      if (this.needsSelection) {
+        this.selectModel()
+      }
+    },
   },
   mounted() {
     window.addEventListener('blur', () => this.blur())
@@ -625,13 +642,7 @@ export default Vue.extend({
       (text: string) => this.$_readText(text),
       this.debounceTime,
     )
-    if (this.value) {
-      if (typeof(this.value) === 'string' || typeof(this.value) === 'number') {
-        this.selectValue(this.value, false)
-      } else if (this.value[this.valueField]) {
-        this.selectItem(this.value, false)
-      }
-    }
+    this.selectModel()
     this.isMounted = true
   },
   components: {
