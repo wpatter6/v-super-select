@@ -259,6 +259,10 @@ export default Vue.extend({
         return
       }
 
+      if(!item) {
+        return;
+      }
+
       if (focus) {
         const f = (this.$refs.input as HTMLElement).focus()
       }
